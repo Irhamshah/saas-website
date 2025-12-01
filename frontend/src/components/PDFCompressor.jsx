@@ -194,9 +194,9 @@ function PDFCompressor({ onClose }) {
 
   const getCompressionLabel = () => {
     switch (compressionLevel) {
-      case 'low': return 'Fast (Screen quality, 72 dpi)';
-      case 'medium': return 'Balanced (eBook quality, 150 dpi) - Recommended';
-      case 'high': return 'Best (Printer quality, 300 dpi)';
+      case 'low': return 'Fast (Low quality, 48 dpi)';
+      case 'medium': return 'Balanced (Medium quality, 72 dpi) - Recommended';
+      case 'high': return 'Best (High quality, 150 dpi)';
       default: return 'Balanced';
     }
   };

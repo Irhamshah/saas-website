@@ -49,26 +49,26 @@ const getGhostscriptSettings = (quality) => {
     case 'low':
       return {
         setting: '/screen',
-        description: 'Screen quality (72 dpi)',
-        dpi: 72,
-        colorImageResolution: 72,
-        grayImageResolution: 72
+        description: 'Low quality (48 dpi)',
+        dpi: 48,
+        colorImageResolution: 48,
+        grayImageResolution: 48
       };
     case 'medium':
       return {
         setting: '/ebook',
-        description: 'eBook quality (150 dpi)',
-        dpi: 150,
-        colorImageResolution: 150,
-        grayImageResolution: 150
+        description: 'Medium quality (72 dpi)',
+        dpi: 72,
+        colorImageResolution: 72,
+        grayImageResolution: 72
       };
     case 'high':
       return {
         setting: '/printer',
-        description: 'Printer quality (300 dpi)',
-        dpi: 300,
-        colorImageResolution: 300,
-        grayImageResolution: 300
+        description: 'High quality (150 dpi)',
+        dpi: 150,
+        colorImageResolution: 150,
+        grayImageResolution: 150
       };
     case 'maximum':
       return {
