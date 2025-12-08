@@ -8,42 +8,36 @@ import {
   Shield,
   Zap,
   Crown,
-  AlertCircle
+  AlertCircle,
+  ExternalLink
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import './Payment.css';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
 
 function Payment() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
   
-  // Get plan from navigation state or default to monthly
   const planFromState = location.state?.plan || 'monthly';
   
   const [selectedPlan, setSelectedPlan] = useState(planFromState);
-  const [paymentMethod, setPaymentMethod] = useState('card');
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState('');
-  
-  const [cardDetails, setCardDetails] = useState({
-    cardNumber: '',
-    cardName: '',
-    expiryDate: '',
-    cvv: '',
-    country: 'US',
-    zipCode: ''
-  });
 
   const plans = {
     monthly: {
       price: 4.99,
+      variantId: '1136851', // From LemonSqueezy Dashboard
       period: 'month',
       savings: null,
       description: 'Billed monthly'
     },
     yearly: {
       price: 49.99,
+      variantId: '1136852', // From LemonSqueezy Dashboard
       period: 'year',
       savings: '17%',
       description: 'Billed annually - Save $9.89'
@@ -61,55 +55,42 @@ function Payment() {
     'Custom presets & templates'
   ];
 
-  const handleCardNumberChange = (e) => {
-    let value = e.target.value.replace(/\s/g, '');
-    value = value.replace(/[^\d]/g, '');
-    value = value.substring(0, 16);
-    value = value.replace(/(\d{4})/g, '$1 ').trim();
-    setCardDetails({ ...cardDetails, cardNumber: value });
-  };
-
-  const handleExpiryChange = (e) => {
-    let value = e.target.value.replace(/\s/g, '');
-    value = value.replace(/[^\d]/g, '');
-    if (value.length >= 2) {
-      value = value.substring(0, 2) + '/' + value.substring(2, 4);
-    }
-    setCardDetails({ ...cardDetails, expiryDate: value });
-  };
-
-  const handleCvvChange = (e) => {
-    let value = e.target.value.replace(/[^\d]/g, '');
-    value = value.substring(0, 4);
-    setCardDetails({ ...cardDetails, cvv: value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleCheckout = async () => {
     setError('');
     setIsProcessing(true);
 
-    // Simulate payment processing
-    setTimeout(() => {
-      // Here you would integrate with your payment processor (Stripe, PayPal, etc.)
-      console.log('Processing payment...', {
-        plan: selectedPlan,
-        amount: plans[selectedPlan].price,
-        paymentMethod,
-        cardDetails
+    try {
+      const token = localStorage.getItem('token');
+      
+      // Call backend to create LemonSqueezy checkout
+      const response = await fetch(`${API_URL}/lemonsqueezy/create-checkout`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          variantId: plans[selectedPlan].variantId,
+          plan: selectedPlan,
+        }),
       });
 
-      // Simulate success
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Failed to create checkout. Please try again.');
+        setIsProcessing(false);
+        return;
+      }
+
+      // Redirect to LemonSqueezy checkout
+      window.location.href = data.checkoutUrl;
+
+    } catch (err) {
+      console.error('Checkout error:', err);
+      setError('An error occurred. Please try again.');
       setIsProcessing(false);
-      
-      // Navigate to success page or dashboard
-      navigate('/payment-success', { 
-        state: { 
-          plan: selectedPlan, 
-          amount: plans[selectedPlan].price 
-        } 
-      });
-    }, 2000);
+    }
   };
 
   if (!user) {
@@ -160,7 +141,7 @@ function Payment() {
         </div>
 
         <div className="payment-layout">
-          {/* Left Column - Payment Form */}
+          {/* Left Column - Plan Selection */}
           <div className="payment-form-section">
             {/* Plan Selection */}
             <div className="section-card">
@@ -215,23 +196,9 @@ function Payment() {
               </div>
             </div>
 
-            {/* Payment Method */}
+            {/* Checkout Info */}
             <div className="section-card">
-              <h2>Payment Method</h2>
-              <div className="payment-methods">
-                <button
-                  className={`payment-method-btn ${paymentMethod === 'card' ? 'active' : ''}`}
-                  onClick={() => setPaymentMethod('card')}
-                >
-                  <CreditCard size={20} />
-                  <span>Credit/Debit Card</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Card Details Form */}
-            <form onSubmit={handleSubmit} className="section-card">
-              <h2>Card Details</h2>
+              <h2>Secure Checkout</h2>
               
               {error && (
                 <div className="error-message">
@@ -240,113 +207,55 @@ function Payment() {
                 </div>
               )}
 
-              <div className="form-grid">
-                <div className="form-group full-width">
-                  <label>
-                    <CreditCard size={16} />
-                    Card Number
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="1234 5678 9012 3456"
-                    value={cardDetails.cardNumber}
-                    onChange={handleCardNumberChange}
-                    required
-                  />
+              <div className="checkout-info">
+                <div className="info-item">
+                  <Shield size={20} />
+                  <div>
+                    <strong>Secure Payment Processing</strong>
+                    <p>Powered by LemonSqueezy - Your payment information is encrypted and secure</p>
+                  </div>
                 </div>
 
-                <div className="form-group full-width">
-                  <label>Cardholder Name</label>
-                  <input
-                    type="text"
-                    placeholder="John Doe"
-                    value={cardDetails.cardName}
-                    onChange={(e) => setCardDetails({ ...cardDetails, cardName: e.target.value })}
-                    required
-                  />
+                <div className="info-item">
+                  <CreditCard size={20} />
+                  <div>
+                    <strong>Multiple Payment Methods</strong>
+                    <p>Credit card, debit card, and more payment options available</p>
+                  </div>
                 </div>
 
-                <div className="form-group">
-                  <label>Expiry Date</label>
-                  <input
-                    type="text"
-                    placeholder="MM/YY"
-                    value={cardDetails.expiryDate}
-                    onChange={handleExpiryChange}
-                    required
-                  />
+                <div className="info-item">
+                  <Lock size={20} />
+                  <div>
+                    <strong>Tax & VAT Included</strong>
+                    <p>All taxes automatically calculated and included at checkout</p>
+                  </div>
                 </div>
-
-                <div className="form-group">
-                  <label>
-                    <Lock size={14} />
-                    CVV
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="123"
-                    value={cardDetails.cvv}
-                    onChange={handleCvvChange}
-                    required
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Country</label>
-                  <select
-                    value={cardDetails.country}
-                    onChange={(e) => setCardDetails({ ...cardDetails, country: e.target.value })}
-                    required
-                  >
-                    <option value="US">United States</option>
-                    <option value="GB">United Kingdom</option>
-                    <option value="CA">Canada</option>
-                    <option value="AU">Australia</option>
-                    <option value="SG">Singapore</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label>ZIP/Postal Code</label>
-                  <input
-                    type="text"
-                    placeholder="12345"
-                    value={cardDetails.zipCode}
-                    onChange={(e) => setCardDetails({ ...cardDetails, zipCode: e.target.value })}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="security-note">
-                <Shield size={16} />
-                <span>Your payment information is secure and encrypted</span>
               </div>
 
               <button 
-                type="submit" 
+                onClick={handleCheckout}
                 className="submit-payment-btn"
                 disabled={isProcessing}
               >
                 {isProcessing ? (
                   <>
                     <div className="spinner-small"></div>
-                    Processing...
+                    Loading Checkout...
                   </>
                 ) : (
                   <>
-                    <Lock size={20} />
-                    Pay ${plans[selectedPlan].price} - Complete Purchase
+                    <ExternalLink size={20} />
+                    Continue to Secure Checkout - ${plans[selectedPlan].price}
                   </>
                 )}
               </button>
 
               <p className="payment-terms">
-                By completing this purchase, you agree to our Terms of Service and Privacy Policy.
-                Your subscription will auto-renew until cancelled.
+                By continuing, you agree to our Terms of Service and Privacy Policy.
+                Your subscription will auto-renew until cancelled. Powered by LemonSqueezy.
               </p>
-            </form>
+            </div>
           </div>
 
           {/* Right Column - Order Summary */}
@@ -385,6 +294,10 @@ function Payment() {
                 <Zap size={14} />
                 <span>Auto-renews {selectedPlan === 'monthly' ? 'monthly' : 'annually'}</span>
               </div>
+
+              <p className="tax-note">
+                + applicable taxes (calculated at checkout)
+              </p>
             </div>
 
             <div className="features-card">

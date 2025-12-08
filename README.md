@@ -1,4 +1,4 @@
-# 🛠️ TinyTools - Micro-Services Platform
+# 🛠️ LiteTools - Micro-Services Platform
 
 A modern, full-stack SaaS platform offering 28+ free productivity tools for developers and professionals. Built with React, Node.js, Express, and MongoDB with Stripe integration for premium subscriptions.
 
@@ -76,7 +76,7 @@ backend/
 1. **Clone the repository**
 ```bash
 git clone <repository-url>
-cd tinytools-platform
+cd LiteTools-platform
 ```
 
 2. **Install Backend Dependencies**
@@ -192,7 +192,7 @@ npm run dev
    ```bash
    # In Stripe Dashboard:
    1. Products → Create Product
-   2. Name: "TinyTools Premium"
+   2. Name: "LiteTools Premium"
    3. Price: $4.99/month (recurring)
    4. Copy the Price ID (starts with price_)
    ```
@@ -221,7 +221,7 @@ npm run dev
 **Heroku:**
 ```bash
 # Install Heroku CLI
-heroku create tinytools-api
+heroku create LiteTools-api
 heroku addons:create mongolab:sandbox
 heroku config:set JWT_SECRET=your_secret
 heroku config:set STRIPE_SECRET_KEY=your_key
@@ -344,7 +344,7 @@ MIT License - feel free to use this for your own projects!
 
 ## 📧 Support
 
-For support, email support@tinytools.com or create an issue on GitHub.
+For support, email support@LiteTools.com or create an issue on GitHub.
 
 ## 🎉 Acknowledgments
 
@@ -355,4 +355,4 @@ For support, email support@tinytools.com or create an issue on GitHub.
 
 ---
 
-Built with ❤️ by the TinyTools Team
+Built with ❤️ by the LiteTools Team

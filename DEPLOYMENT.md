@@ -1,6 +1,6 @@
-# 🚀 TinyTools Deployment Guide
+# 🚀 LiteTools Deployment Guide
 
-Complete step-by-step guide to deploy your TinyTools platform to production.
+Complete step-by-step guide to deploy your LiteTools platform to production.
 
 ## Table of Contents
 1. [Database Setup (MongoDB Atlas)](#database-setup)
@@ -24,7 +24,7 @@ Complete step-by-step guide to deploy your TinyTools platform to production.
 1. Click "Connect" on your cluster
 2. Choose "Connect your application"
 3. Copy connection string:
-   mongodb+srv://username:<password>@cluster.mongodb.net/tinytools
+   mongodb+srv://username:<password>@cluster.mongodb.net/LiteTools
 4. Replace <password> with your database user password
 ```
 
@@ -35,7 +35,7 @@ Complete step-by-step guide to deploy your TinyTools platform to production.
 ```
 
 ### Step 4: Create Database User
-- Username: `tinytools-admin`
+- Username: `LiteTools-admin`
 - Password: Generate secure password
 - Permissions: Read and write to any database
 
@@ -84,7 +84,7 @@ railway up
 5. **Get Your API URL**
 ```bash
 railway domain
-# Will output something like: https://tinytools-api.up.railway.app
+# Will output something like: https://LiteTools-api.up.railway.app
 ```
 
 ### Option B: Render.com
@@ -99,7 +99,7 @@ railway domain
 
 5. Add Environment Variables (same as Railway)
 
-6. Deploy - you'll get URL like: `https://tinytools-api.onrender.com`
+6. Deploy - you'll get URL like: `https://LiteTools-api.onrender.com`
 
 ### Option C: Heroku
 
@@ -109,7 +109,7 @@ heroku login
 cd backend
 
 # Create app
-heroku create tinytools-api
+heroku create LiteTools-api
 
 # Add MongoDB addon
 heroku addons:create mongolab:sandbox
@@ -124,7 +124,7 @@ heroku config:set NODE_ENV=production
 git init
 git add .
 git commit -m "Initial commit"
-heroku git:remote -a tinytools-api
+heroku git:remote -a LiteTools-api
 git push heroku main
 ```
 
@@ -160,7 +160,7 @@ echo "VITE_API_URL=https://your-backend-url.railway.app/api" > .env.production
 vercel
 # Follow prompts:
 # - Link to existing project? No
-# - Project name: tinytools
+# - Project name: LiteTools
 # - Directory: ./
 # - Build command: npm run build
 # - Output directory: dist
@@ -178,7 +178,7 @@ vercel
 vercel --prod
 ```
 
-You'll get: `https://tinytools.vercel.app`
+You'll get: `https://LiteTools.vercel.app`
 
 ### Option B: Netlify
 
@@ -237,7 +237,7 @@ gh-pages -d dist
 3. **Create Live Product**
    ```bash
    # Products → Create Product
-   Name: TinyTools Premium
+   Name: LiteTools Premium
    Price: $4.99/month
    Billing: Recurring monthly
    
@@ -459,4 +459,4 @@ app.use(cors({
 
 ---
 
-Need help? Create an issue or email support@tinytools.com
+Need help? Create an issue or email support@LiteTools.com

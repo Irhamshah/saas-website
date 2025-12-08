@@ -1,7 +1,7 @@
 {
-  "name": "tinytools-backend",
+  "name": "LiteTools-backend",
   "version": "1.0.0",
-  "description": "Backend API for TinyTools platform",
+  "description": "Backend API for LiteTools platform",
   "main": "server.js",
   "type": "module",
   "scripts": {

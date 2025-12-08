@@ -1,8 +1,10 @@
+// PUT THIS AT THE VERY TOP (BEFORE ANY OTHER IMPORTS!)
+import dotenv from 'dotenv';
+dotenv.config();
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import dotenv from 'dotenv';
 import { connectDB } from './config/database.js';
 import authRoutes from './routes/auth.js';
 import subscriptionRoutes from './routes/subscription.js';
@@ -10,8 +12,8 @@ import analyticsRoutes from './routes/analytics.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import pdfCompressRoutes from './routes/pdfCompress.js';
 import imageCompressRoutes from './routes/imageCompress.js';
+import lemonSqueezyRoutes from './routes/lemonsqueezy.js';
 
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -35,6 +37,7 @@ app.use('/api/subscription', subscriptionRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/pdf', pdfCompressRoutes); // ← Add this
 app.use('/api/image', imageCompressRoutes); // ← And this
+app.use('/api/lemonsqueezy', lemonSqueezyRoutes); // ← And this
 
 // Health check
 app.get('/api/health', (req, res) => {

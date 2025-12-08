@@ -1,4 +1,4 @@
-# 🏛️ TinyTools Architecture
+# 🏛️ LiteTools Architecture
 
 ## System Overview
 

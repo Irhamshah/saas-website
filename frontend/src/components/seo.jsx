@@ -7,7 +7,7 @@ function SEO({
   ogImage = '/og-image.png',
   canonicalUrl 
 }) {
-  const siteName = 'TinyTools';
+  const siteName = 'LiteTools';
   const fullTitle = title ? `${title} | ${siteName}` : siteName;
   const defaultDescription = 'Free online tools for text, images, PDFs, developers, and more. No sign-up required. Privacy-first.';
   const metaDescription = description || defaultDescription;

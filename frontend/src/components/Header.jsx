@@ -55,8 +55,8 @@ function Header({ setShowAuthModal }) {
     <header className="header">
       <div className="header-container">
         <Link to="/" className="logo">
-          <div className="logo-icon">TT</div>
-          <span className="logo-text">TinyTools</span>
+          <div className="logo-icon">LT</div>
+          <span className="logo-text">LiteTools</span>
         </Link>
 
         {/* Desktop Navigation */}

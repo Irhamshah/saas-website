@@ -76,7 +76,7 @@ function Home() {
       <section className="hero">
         <div className="hero-content">
           <h1 className="hero-title">
-            <span className="gradient-text">TinyTools</span>
+            <span className="gradient-text">LiteTools</span>
           </h1>
           <p className="hero-subtitle">
             Your Swiss Army Knife for Digital Tasks
@@ -142,7 +142,7 @@ function Home() {
       {/* Features Section */}
       <section className="features">
         <div className="features-header">
-          <h2>Why Choose TinyTools?</h2>
+          <h2>Why Choose LiteTools?</h2>
         </div>
         <div className="features-grid">
           <div className="feature-card">

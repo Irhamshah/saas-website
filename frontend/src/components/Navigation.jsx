@@ -41,7 +41,7 @@ function Navigation() {
         <div className="nav-container">
           <Link to="/" className="nav-logo">
             <Zap size={28} />
-            <span>TinyTools</span>
+            <span>LiteTools</span>
           </Link>
           <div className="nav-actions">
             <div className="loading-placeholder">Loading...</div>
@@ -57,7 +57,7 @@ function Navigation() {
         <div className="nav-container">
           <Link to="/" className="nav-logo">
             <Zap size={28} />
-            <span>TinyTools</span>
+            <span>LiteTools</span>
           </Link>
 
           <div className={`nav-links ${mobileMenuOpen ? 'active' : ''}`}>

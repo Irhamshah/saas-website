@@ -8,7 +8,7 @@ function Footer() {
       <div className="container">
         <div className="footer-content">
           <div className="footer-section">
-            <h3 className="footer-logo">TinyTools</h3>
+            <h3 className="footer-logo">LiteTools</h3>
             <p>Free micro-services for productivity</p>
           </div>
           
@@ -40,7 +40,7 @@ function Footer() {
         </div>
 
         <div className="footer-bottom">
-          <p>&copy; 2024 TinyTools. All tools run securely in your browser.</p>
+          <p>&copy; 2025 LiteTools. All tools run securely in your browser.</p>
         </div>
       </div>
     </footer>

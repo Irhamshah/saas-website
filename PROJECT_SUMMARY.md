@@ -1,4 +1,4 @@
-# 🎉 TinyTools Platform - Project Complete!
+# 🎉 LiteTools Platform - Project Complete!
 
 ## What You've Received
 
@@ -53,7 +53,7 @@ All tools include working processors:
 ## 📁 File Structure
 
 ```
-tinytools-platform/
+LiteTools-platform/
 │
 ├── 📱 frontend/                    # React Application
 │   ├── src/
@@ -399,7 +399,7 @@ http://localhost:3000
 ### Get Help
 - 📖 Read the documentation
 - 💬 Create GitHub issue
-- 📧 Email: support@tinytools.com
+- 📧 Email: support@LiteTools.com
 - 🐛 Report bugs
 - 💡 Suggest features
 

@@ -1,4 +1,4 @@
-# 🚀 Quick Start Guide - TinyTools Platform
+# 🚀 Quick Start Guide - LiteTools Platform
 
 Get your platform running in 10 minutes!
 
@@ -37,7 +37,7 @@ sudo systemctl start mongod
 
 ```bash
 # Navigate to project
-cd tinytools-platform
+cd LiteTools-platform
 
 # Install backend dependencies
 cd backend
@@ -61,7 +61,7 @@ Edit `.env` with your values:
 # Minimum required for development:
 NODE_ENV=development
 PORT=5000
-MONGODB_URI=mongodb://localhost:27017/tinytools  # Or your Atlas URI
+MONGODB_URI=mongodb://localhost:27017/LiteTools  # Or your Atlas URI
 JWT_SECRET=dev-secret-change-in-production-123456
 FRONTEND_URL=http://localhost:3000
 
@@ -156,7 +156,7 @@ curl -X POST http://localhost:5000/api/auth/register \
 2. Click "JSON Formatter"
 3. Paste this JSON:
 ```json
-{"name":"TinyTools","tools":28,"awesome":true}
+{"name":"LiteTools","tools":28,"awesome":true}
 ```
 4. Click "Process" → See formatted output!
 
@@ -169,7 +169,7 @@ curl -X POST http://localhost:5000/api/auth/register \
 ## 📁 Project Structure
 
 ```
-tinytools-platform/
+LiteTools-platform/
 ├── frontend/                 # React app
 │   ├── src/
 │   │   ├── components/      # Reusable components
@@ -218,7 +218,7 @@ tinytools-platform/
 mongosh
 
 # Use database
-use tinytools
+use LiteTools
 
 # View users
 db.users.find().pretty()
@@ -339,7 +339,7 @@ export const toolProcessors = {
 - 🏗️ Check ARCHITECTURE.md for technical details
 - 🚀 See DEPLOYMENT.md for production setup
 - 💬 Create issue on GitHub
-- 📧 Email: support@tinytools.com
+- 📧 Email: support@LiteTools.com
 
 ---
 

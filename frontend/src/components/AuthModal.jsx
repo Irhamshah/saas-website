@@ -105,7 +105,7 @@ function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
                         <p>
                             {mode === 'login'
                                 ? 'Sign in to access your dashboard and premium features'
-                                : 'Join TinyTools to unlock powerful productivity tools'}
+                                : 'Join LiteTools to unlock powerful productivity tools'}
                         </p>
                     </div>
 
@@ -232,7 +232,7 @@ function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
 
                     {mode === 'register' && (
                         <div className="auth-benefits">
-                            <h4>Why Join TinyTools?</h4>
+                            <h4>Why Join LiteTools?</h4>
                             <ul>
                                 <li>✅ 3 free uses per tool per month</li>
                                 <li>✅ Track your usage and history</li>

@@ -1,4 +1,4 @@
-📊 TinyTools Platform - File Statistics
+📊 LiteTools Platform - File Statistics
 
 Total Files Created:
 41

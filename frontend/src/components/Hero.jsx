@@ -7,7 +7,7 @@ function Hero({ searchQuery, setSearchQuery }) {
     <section className="hero">
       <div className="container">
         <h1>
-          <span className="gradient-text">Tiny Tools,</span><br />
+          <span className="gradient-text">Lite Tools,</span><br />
           Massive Productivity
         </h1>
         <p>
