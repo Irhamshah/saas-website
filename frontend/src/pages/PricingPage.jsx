@@ -6,6 +6,14 @@ import './PricingPage.css';
 function PricingPage() {
   const { user } = useAuth();
 
+  const handleUpgrade = () => {
+    return () => {
+      if (!user?.isPremium) {
+        window.location.href = '/payment';
+      }
+    };
+  }
+
   const plans = [
     {
       name: 'Free',
@@ -76,6 +84,7 @@ function PricingPage() {
               <button 
                 className={`btn-${plan.popular ? 'primary' : 'secondary'} cta-btn`}
                 disabled={plan.current}
+                onClick={handleUpgrade()}
               >
                 {plan.cta}
               </button>

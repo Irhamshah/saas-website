@@ -9,6 +9,23 @@ import './ToolModal.css';
 import PDFMerge from './PDFMerge';
 import PDFCompressor from './PDFCompressor';
 import ImageCompressor from './ImageCompressor';
+import DataConverter from './DataConverter';
+import ImageToPDF from './ImageToPDF';
+import QRGenerator from './QRGenerator';
+import TextTools from './TextTools';
+import InvoiceGenerator from './InvoiceGenerator';
+import ReceiptGenerator from './ReceiptGenerator';
+import ImageColorPicker from './ImageColorPicker';
+import UnitConverter from './UnitConverter';
+import JSONFormatter from './JSONFormatter';
+import SQLFormatter from './SQLFormatter';
+import RegexTester from './RegexTester';
+import JWTDecoder from './JWTDecoder';
+import HashGenerator from './HashGenerator';
+import Base64Tool from './Base64Tool';
+import PasswordGenerator from './PasswordGenerator';
+import InterestCalculator from './InterestCalculator';
+import LoanCalculator from './LoanCalculator';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -174,20 +191,120 @@ function ToolModal({ tool, onClose }) {
     return <PDFCompressor onClose={onClose} />;
   }
 
-  if (tool.id === 'image-compressor') {
+  if (tool.id === 'image-compress') {
     return <ImageCompressor onClose={onClose} />;
+  }
+
+  // Add this check for csv-json tool
+  if (tool.id === 'csv-json') {
+    return <DataConverter onClose={onClose} initialMode="csv-to-json" />;
+  }
+
+  // Image to PDF
+  if (tool.id === 'image-pdf') {
+    return <ImageToPDF onClose={onClose} />;
+  }
+
+  // QR Code Generator
+  if (tool.id === 'qr') {
+    return <QRGenerator onClose={onClose} />;
+  }
+  // Word Counter
+  if (tool.id === 'word-counter') {
+    return <TextTools onClose={onClose} initialTool="word-counter" />;
+  }
+
+  // Case Converter
+  if (tool.id === 'case-converter') {
+    return <TextTools onClose={onClose} initialTool="case-converter" />;
+  }
+
+  // Duplicate Remover
+  if (tool.id === 'duplicate-remover') {
+    return <TextTools onClose={onClose} initialTool="duplicate-remover" />;
+  }
+
+  // Sort Lines
+  if (tool.id === 'sort-lines') {
+    return <TextTools onClose={onClose} initialTool="sort-lines" />;
+  }
+
+  // Text Diff
+  if (tool.id === 'text-diff') {
+    return <TextTools onClose={onClose} initialTool="text-diff" />;
+  }
+
+  // Lorem Ipsum Generator
+  if (tool.id === 'lorem-ipsum') {
+    return <TextTools onClose={onClose} initialTool="lorem-ipsum" />;
+  }
+
+  if (tool.id === 'invoice') {
+    return <InvoiceGenerator onClose={onClose} />;
+  }
+
+  if (tool.id === 'receipt') {
+    return <ReceiptGenerator onClose={onClose} />;
+  }
+
+  if (tool.id === 'color-picker') {
+    return <ImageColorPicker onClose={onClose} />;
+  }
+
+  if (tool.id === 'unit-converter') {
+    return <UnitConverter onClose={onClose} />;
+  }
+
+  // JSON Formatter
+  if (tool.id === 'json-formatter') {
+    return <JSONFormatter onClose={onClose} />;
+  }
+
+  // SQL Formatter
+  if (tool.id === 'sql-formatter') {
+    return <SQLFormatter onClose={onClose} />;
+  }
+
+  if (tool.id === 'regex') {
+    return <RegexTester onClose={onClose} />;
+  }
+
+  if (tool.id === 'jwt') {
+    return <JWTDecoder onClose={onClose} />;
+  }
+
+  // Hash Generator
+  if (tool.id === 'hash') {
+    return <HashGenerator onClose={onClose} />;
+  }
+
+  // Base64 Tool
+  if (tool.id === 'base64') {
+    return <Base64Tool onClose={onClose} />;
+  }
+
+  if (tool.id === 'password') {
+    return <PasswordGenerator onClose={onClose} />;
+  }
+
+  if (tool.id === 'interest-calculator') {
+    return <InterestCalculator onClose={onClose} />;
+  }
+
+  if (tool.id === 'loan-calculator') {
+    return <LoanCalculator onClose={onClose} />;
   }
 
   return (
     <AnimatePresence>
-      <motion.div 
+      <motion.div
         className="modal-overlay"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={onClose}
       >
-        <motion.div 
+        <motion.div
           className="modal"
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -213,8 +330,8 @@ function ToolModal({ tool, onClose }) {
                   <span>Free Monthly Limit: {usageRemaining} uses remaining</span>
                 </div>
                 <div className="usage-bar">
-                  <div 
-                    className="usage-fill" 
+                  <div
+                    className="usage-fill"
                     style={{ width: `${Math.min(usagePercentage, 100)}%` }}
                   />
                 </div>
@@ -268,8 +385,8 @@ function ToolModal({ tool, onClose }) {
               </div>
             )}
 
-            <button 
-              className="btn-primary process-btn" 
+            <button
+              className="btn-primary process-btn"
               onClick={handleProcess}
               disabled={requiresPremium || processing || usageCount >= usageLimit}
             >
@@ -277,7 +394,7 @@ function ToolModal({ tool, onClose }) {
             </button>
 
             {output && (
-              <motion.div 
+              <motion.div
                 className="tool-output-section"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -286,16 +403,16 @@ function ToolModal({ tool, onClose }) {
                   <label>Output</label>
                   <div className="output-actions">
                     {!output.startsWith('data:') && (
-                      <button 
-                        className="icon-btn" 
+                      <button
+                        className="icon-btn"
                         onClick={handleCopy}
                         title="Copy to clipboard"
                       >
                         {copied ? <Check size={18} /> : <Copy size={18} />}
                       </button>
                     )}
-                    <button 
-                      className="icon-btn" 
+                    <button
+                      className="icon-btn"
                       onClick={handleDownload}
                       title="Download"
                     >
@@ -326,7 +443,7 @@ function ToolModal({ tool, onClose }) {
   );
 
   function getAcceptTypes() {
-    switch(tool.id) {
+    switch (tool.id) {
       case 'image-compress':
       case 'image-pdf':
         return 'image/*';
@@ -340,7 +457,7 @@ function ToolModal({ tool, onClose }) {
   }
 
   function getFileHint() {
-    switch(tool.id) {
+    switch (tool.id) {
       case 'image-compress':
         return ' PNG, JPG, WebP (Max 10MB)';
       case 'image-pdf':

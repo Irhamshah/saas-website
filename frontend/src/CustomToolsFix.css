@@ -1,0 +1,650 @@
+/* ========================================
+   CUSTOM TOOL COMPONENTS CSS FIX
+   Add this AFTER App.css in your index.js/index.html
+   Or append to the END of App.css
+   ======================================== */
+
+/* PDF Tools - PDFMerge, PDFCompressor, PDFSplit */
+.pdf-container,
+.pdf-modal-container,
+.pdf-tool,
+[class*="pdf-"] {
+  background: transparent !important;
+  color: white !important;
+}
+
+.pdf-container h2,
+.pdf-modal-container h2 {
+  color: white !important;
+}
+
+.pdf-container .upload-area,
+.pdf-container .file-list,
+.pdf-modal-container .upload-area {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 2px dashed rgba(255, 255, 255, 0.2) !important;
+  border-radius: 12px !important;
+  color: white !important;
+}
+
+.pdf-container button,
+.pdf-modal-container button {
+  background: linear-gradient(135deg, #2D5BFF 0%, #1E40AF 100%) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 12px !important;
+  padding: 0.75rem 1.5rem !important;
+  cursor: pointer !important;
+}
+
+.pdf-container .file-item,
+.pdf-modal-container .file-item {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  color: white !important;
+  padding: 1rem !important;
+}
+
+/* Image Tools - ImageCompressor, ImageToPDF, ColorPicker */
+.image-compressor,
+.image-to-pdf,
+.color-picker,
+[class*="image-"] {
+  background: transparent !important;
+  color: white !important;
+}
+
+.image-compressor h2,
+.image-to-pdf h2,
+.color-picker h2 {
+  color: white !important;
+}
+
+.image-preview,
+.preview-container,
+.image-result {
+  background: rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  padding: 1rem !important;
+}
+
+.image-preview img {
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+.quality-slider,
+.compression-slider,
+[class*="slider"] {
+  width: 100% !important;
+  margin: 1rem 0 !important;
+}
+
+.quality-value,
+.compression-value,
+.size-info {
+  color: white !important;
+  font-size: 0.875rem !important;
+}
+
+/* Data Converter - CSV/JSON */
+.data-converter,
+.converter-container,
+[class*="converter"] {
+  background: transparent !important;
+  color: white !important;
+}
+
+.data-converter textarea,
+.converter-container textarea {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  color: white !important;
+  padding: 1rem !important;
+  font-family: 'Courier New', monospace !important;
+  min-height: 200px !important;
+}
+
+.mode-toggle,
+.format-toggle,
+[class*="toggle"] {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  padding: 0.5rem 1rem !important;
+  color: white !important;
+}
+
+.mode-toggle.active,
+.format-toggle.active {
+  background: linear-gradient(135deg, #2D5BFF 0%, #1E40AF 100%) !important;
+  color: white !important;
+}
+
+/* QR Generator */
+.qr-generator,
+.qr-container {
+  background: transparent !important;
+  color: white !important;
+}
+
+.qr-preview,
+.qr-result {
+  background: white !important;
+  padding: 2rem !important;
+  border-radius: 12px !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.qr-types,
+.qr-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.qr-type-btn,
+.qr-option-btn {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  padding: 0.75rem !important;
+  color: white !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+}
+
+.qr-type-btn.active,
+.qr-option-btn.active {
+  background: linear-gradient(135deg, #2D5BFF 0%, #1E40AF 100%) !important;
+  border-color: #2D5BFF !important;
+}
+
+/* Text Tools - TextTools component */
+.text-tools,
+.text-tool-container {
+  background: transparent !important;
+  color: white !important;
+}
+
+.text-tools textarea {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  color: white !important;
+  padding: 1rem !important;
+  min-height: 150px !important;
+  font-family: 'Courier New', monospace !important;
+}
+
+.text-stats,
+.text-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.stat-item,
+.info-item {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  padding: 1rem !important;
+  text-align: center;
+}
+
+.stat-value,
+.info-value {
+  color: #2D5BFF !important;
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+}
+
+.stat-label,
+.info-label {
+  color: rgba(255, 255, 255, 0.7) !important;
+  font-size: 0.75rem !important;
+  margin-top: 0.25rem;
+}
+
+.case-buttons,
+.text-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.case-btn,
+.text-action-btn {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  padding: 0.5rem 1rem !important;
+  color: white !important;
+  cursor: pointer !important;
+  font-size: 0.875rem !important;
+}
+
+.case-btn:hover,
+.text-action-btn:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Invoice & Receipt Generators */
+.invoice-generator,
+.receipt-generator,
+[class*="generator"] {
+  background: transparent !important;
+  color: white !important;
+}
+
+.form-grid,
+.invoice-form,
+.receipt-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  color: white !important;
+  padding: 0.75rem !important;
+}
+
+.items-section,
+.products-section {
+  margin: 1.5rem 0;
+}
+
+.item-row,
+.product-row {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  padding: 1rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.add-item-btn,
+.add-product-btn,
+.remove-btn {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  padding: 0.5rem 1rem !important;
+  color: white !important;
+  cursor: pointer !important;
+  font-size: 0.875rem !important;
+}
+
+.invoice-preview,
+.receipt-preview {
+  background: white !important;
+  color: black !important;
+  padding: 2rem !important;
+  border-radius: 8px !important;
+  margin-top: 1.5rem !important;
+}
+
+/* Unit Converter */
+.unit-converter {
+  background: transparent !important;
+  color: white !important;
+}
+
+.converter-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 1rem;
+  align-items: end;
+  margin: 1.5rem 0;
+}
+
+.converter-input {
+  display: flex;
+  flex-direction: column;
+}
+
+.swap-btn {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 50% !important;
+  width: 40px !important;
+  height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: white !important;
+  cursor: pointer !important;
+}
+
+.category-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.category-tab {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  padding: 0.5rem 1rem !important;
+  color: white !important;
+  cursor: pointer !important;
+  font-size: 0.875rem !important;
+}
+
+.category-tab.active {
+  background: linear-gradient(135deg, #2D5BFF 0%, #1E40AF 100%) !important;
+  border-color: #2D5BFF !important;
+}
+
+/* Developer Tools - JSON, SQL, Regex, JWT, Hash, Base64 */
+.json-formatter,
+.sql-formatter,
+.regex-tester,
+.jwt-decoder,
+.hash-generator,
+.base64-tool {
+  background: transparent !important;
+  color: white !important;
+}
+
+.code-editor,
+.code-input,
+.code-output {
+  background: rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  color: white !important;
+  padding: 1rem !important;
+  font-family: 'Courier New', monospace !important;
+  min-height: 200px !important;
+}
+
+.code-editor textarea,
+.code-input textarea {
+  background: transparent !important;
+  border: none !important;
+  color: white !important;
+  width: 100% !important;
+  min-height: 200px !important;
+  resize: vertical !important;
+  font-family: 'Courier New', monospace !important;
+  font-size: 0.875rem !important;
+}
+
+.formatter-actions,
+.tool-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.action-btn {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  padding: 0.5rem 1rem !important;
+  color: white !important;
+  cursor: pointer !important;
+  font-size: 0.875rem !important;
+}
+
+.action-btn:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.regex-matches,
+.jwt-payload,
+.hash-result {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  padding: 1rem !important;
+  margin-top: 1rem !important;
+}
+
+.match-item {
+  background: rgba(45, 91, 255, 0.1) !important;
+  border: 1px solid rgba(45, 91, 255, 0.3) !important;
+  border-radius: 4px !important;
+  padding: 0.5rem !important;
+  margin: 0.5rem 0 !important;
+  font-family: 'Courier New', monospace !important;
+  color: white !important;
+}
+
+/* Password Generator */
+.password-generator {
+  background: transparent !important;
+  color: white !important;
+}
+
+.password-display {
+  background: rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  padding: 1.5rem !important;
+  font-family: 'Courier New', monospace !important;
+  font-size: 1.25rem !important;
+  color: white !important;
+  text-align: center;
+  margin: 1rem 0;
+  word-break: break-all;
+}
+
+.password-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.option-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-radius: 8px;
+}
+
+.option-label {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-size: 0.875rem !important;
+}
+
+.checkbox,
+input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.length-slider,
+input[type="range"] {
+  width: 100% !important;
+  margin: 0.5rem 0 !important;
+}
+
+.strength-meter {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 1rem;
+}
+
+.strength-fill {
+  height: 100%;
+  transition: width 0.3s ease, background 0.3s ease;
+}
+
+.strength-fill.weak {
+  background: #EF4444;
+  width: 33%;
+}
+
+.strength-fill.medium {
+  background: #F59E0B;
+  width: 66%;
+}
+
+.strength-fill.strong {
+  background: #10B981;
+  width: 100%;
+}
+
+/* Financial Calculators */
+.interest-calculator,
+.loan-calculator {
+  background: transparent !important;
+  color: white !important;
+}
+
+.calculator-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.calc-tab {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  padding: 0.75rem 1.5rem !important;
+  color: white !important;
+  cursor: pointer !important;
+  font-weight: 600 !important;
+}
+
+.calc-tab.active {
+  background: linear-gradient(135deg, #2D5BFF 0%, #1E40AF 100%) !important;
+  border-color: #2D5BFF !important;
+}
+
+.result-card,
+.calculation-result {
+  background: linear-gradient(135deg, rgba(45, 91, 255, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%) !important;
+  border: 1px solid rgba(45, 91, 255, 0.3) !important;
+  border-radius: 12px !important;
+  padding: 1.5rem !important;
+  margin-top: 1.5rem !important;
+}
+
+.result-amount,
+.total-amount {
+  color: #2D5BFF !important;
+  font-size: 2rem !important;
+  font-weight: 700 !important;
+  margin: 0.5rem 0 !important;
+}
+
+.result-breakdown,
+.calculation-breakdown {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.breakdown-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-radius: 8px;
+}
+
+.breakdown-label {
+  color: rgba(255, 255, 255, 0.7) !important;
+  font-size: 0.875rem !important;
+}
+
+.breakdown-value {
+  color: white !important;
+  font-weight: 600 !important;
+}
+
+.amortization-table {
+  margin-top: 1.5rem;
+  overflow-x: auto;
+}
+
+.amortization-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.amortization-table th,
+.amortization-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.amortization-table th {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: white !important;
+  font-weight: 600 !important;
+}
+
+.amortization-table td {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Responsive Adjustments for Custom Components */
+@media (max-width: 768px) {
+  .converter-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .swap-btn {
+    transform: rotate(90deg);
+    margin: 0.5rem 0;
+  }
+  
+  .form-grid,
+  .invoice-form,
+  .receipt-form {
+    grid-template-columns: 1fr;
+  }
+  
+  .calculator-tabs {
+    flex-direction: column;
+  }
+  
+  .result-breakdown,
+  .calculation-breakdown {
+    grid-template-columns: 1fr;
+  }
+}

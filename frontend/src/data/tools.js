@@ -5,59 +5,59 @@ export const toolCategories = [
     icon: "⚡",
     iconClass: "dev-icon",
     tools: [
-      { 
-        id: "json-formatter", 
-        name: "JSON Formatter", 
-        description: "Format, validate, and beautify JSON data", 
+      {
+        id: "json-formatter",
+        name: "JSON Formatter",
+        description: "Format, validate, and beautify JSON data",
         premium: false,
         category: "developer"
       },
-      { 
-        id: "csv-json", 
-        name: "CSV ↔ JSON Converter", 
-        description: "Convert between CSV and JSON formats", 
+      {
+        id: "csv-json",
+        name: "CSV ↔ JSON Converter",
+        description: "Convert between CSV and JSON formats",
         premium: false,
         category: "developer"
       },
-      { 
-        id: "uuid", 
-        name: "UUID Generator", 
-        description: "Generate unique identifiers instantly", 
+      {
+        id: "uuid",
+        name: "UUID Generator",
+        description: "Generate unique identifiers instantly",
         premium: false,
         category: "developer"
       },
-      { 
-        id: "regex", 
-        name: "Regex Tester", 
-        description: "Test and validate regular expressions", 
+      {
+        id: "regex",
+        name: "Regex Tester",
+        description: "Test and validate regular expressions",
         premium: false,
         category: "developer"
       },
-      { 
-        id: "sql-formatter", 
-        name: "SQL Formatter", 
-        description: "Format and beautify SQL queries", 
+      {
+        id: "sql-formatter",
+        name: "SQL Formatter",
+        description: "Format and beautify SQL queries",
         premium: false,
         category: "developer"
       },
-      { 
-        id: "jwt", 
-        name: "JWT Decoder", 
-        description: "Decode and inspect JWT tokens", 
+      {
+        id: "jwt",
+        name: "JWT Decoder",
+        description: "Decode and inspect JWT tokens",
         premium: true,
         category: "developer"
       },
-      { 
-        id: "hash", 
-        name: "Hash Generator", 
-        description: "Generate MD5, SHA256 hashes", 
+      {
+        id: "hash",
+        name: "Hash Generator",
+        description: "Generate MD5, SHA256 hashes",
         premium: false,
         category: "developer"
       },
-      { 
-        id: "base64", 
-        name: "Base64 Encoder/Decoder", 
-        description: "Encode and decode Base64 strings", 
+      {
+        id: "base64",
+        name: "Base64 Encoder/Decoder",
+        description: "Encode and decode Base64 strings",
         premium: false,
         category: "developer"
       }
@@ -69,45 +69,45 @@ export const toolCategories = [
     icon: "📄",
     iconClass: "file-icon",
     tools: [
-      { 
-        id: "pdf-merge", 
-        name: "PDF Merge", 
-        description: "Combine multiple PDFs into one", 
+      {
+        id: "pdf-merge",
+        name: "PDF Merge",
+        description: "Combine multiple PDFs into one",
         premium: true,
         category: "file"
       },
-      { 
-        id: "pdf-split", 
-        name: "PDF Split", 
-        description: "Split PDF into separate pages", 
+      {
+        id: "pdf-split",
+        name: "PDF Split",
+        description: "Split PDF into separate pages",
         premium: true,
         category: "file"
       },
-      { 
-        id: "pdf-compress", 
-        name: "PDF Compress", 
-        description: "Reduce PDF file size", 
+      {
+        id: "pdf-compress",
+        name: "PDF Compress",
+        description: "Reduce PDF file size",
         premium: true,
         category: "file"
       },
-      { 
-        id: "image-compress", 
-        name: "Image Compressor", 
-        description: "Compress images without quality loss", 
+      {
+        id: "image-compress",
+        name: "Image Compressor",
+        description: "Compress images without quality loss",
         premium: false,
         category: "file"
       },
-      { 
-        id: "image-pdf", 
-        name: "Image → PDF", 
-        description: "Convert images to PDF format", 
+      {
+        id: "image-pdf",
+        name: "Image → PDF",
+        description: "Convert images to PDF format",
         premium: false,
         category: "file"
       },
-      { 
-        id: "qr", 
-        name: "QR Code Generator", 
-        description: "Create QR codes for any data", 
+      {
+        id: "qr",
+        name: "QR Code Generator",
+        description: "Create QR codes for any data",
         premium: false,
         category: "file"
       }
@@ -119,47 +119,52 @@ export const toolCategories = [
     icon: "✍️",
     iconClass: "text-icon",
     tools: [
-      { 
-        id: "word-counter", 
-        name: "Word Counter", 
-        description: "Count words, characters, and lines", 
+      {
+        id: "word-counter",
+        name: "Word Counter",
+        description: "Count words, characters, and lines",
         premium: false,
         category: "text"
       },
-      { 
-        id: "case-converter", 
-        name: "Case Converter", 
-        description: "Convert text case (UPPER, lower, Title)", 
+      {
+        id: "case-converter",
+        name: "Case Converter",
+        description: "Convert text case (UPPER, lower, Title)",
         premium: false,
         category: "text"
       },
-      { 
-        id: "duplicate-remover", 
-        name: "Duplicate Line Remover", 
-        description: "Remove duplicate lines from text", 
+      {
+        id: "duplicate-remover",
+        name: "Duplicate Line Remover",
+        description: "Remove duplicate lines from text",
         premium: false,
         category: "text"
       },
-      { 
-        id: "sort-lines", 
-        name: "Sort Lines", 
-        description: "Sort text lines alphabetically", 
+      {
+        id: "sort-lines",
+        name: "Sort Lines",
+        description: "Sort text lines alphabetically",
         premium: false,
         category: "text"
       },
-      { 
-        id: "text-diff", 
-        name: "Text Diff Checker", 
-        description: "Compare two texts side by side", 
+      {
+        id: "text-diff",
+        name: "Text Diff Checker",
+        description: "Compare two texts side by side",
         premium: false,
         category: "text"
       },
-      { 
-        id: "markdown-preview", 
-        name: "Markdown Preview", 
-        description: "Preview markdown in real-time", 
+      {
+        id: "markdown-preview",
+        name: "Markdown Preview",
+        description: "Preview markdown in real-time",
         premium: false,
         category: "text"
+      },
+      {
+        id: "lorem-ipsum",              // ← ADD THIS
+        name: "Lorem Ipsum Generator",
+        description: "Generate dummy placeholder text"
       }
     ]
   },
@@ -169,40 +174,60 @@ export const toolCategories = [
     icon: "💼",
     iconClass: "business-icon",
     tools: [
-      { 
-        id: "invoice", 
-        name: "Invoice Generator", 
-        description: "Create professional invoices", 
+      {
+        id: "invoice",
+        name: "Invoice Generator",
+        description: "Create professional invoices",
         premium: true,
         category: "business"
       },
-      { 
-        id: "receipt", 
-        name: "Receipt Generator", 
-        description: "Generate receipts instantly", 
+      {
+        id: "receipt",
+        name: "Receipt Generator",
+        description: "Generate receipts instantly",
         premium: false,
         category: "business"
       },
-      { 
-        id: "password", 
-        name: "Password Generator", 
-        description: "Generate secure passwords", 
+      {
+        id: "password",
+        name: "Password Generator",
+        description: "Generate secure passwords",
         premium: false,
         category: "business"
       },
-      { 
-        id: "color-picker", 
-        name: "Color Picker", 
-        description: "Pick and convert color codes", 
+      {
+        id: "color-picker",
+        name: "Color Picker",
+        description: "Pick and convert color codes",
         premium: false,
         category: "business"
       },
-      { 
-        id: "unit-converter", 
-        name: "Unit Converter", 
-        description: "Convert between units easily", 
+      {
+        id: "unit-converter",
+        name: "Unit Converter",
+        description: "Convert between units easily",
         premium: false,
         category: "business"
+      }
+    ]
+  },
+  {
+    id: 'finance',
+    name: "Finance Tools",
+    icon: "📈",
+    iconClass: "business-icon",
+    tools: [
+      {
+        id: "interest-calculator",
+        name: "Interest Calculator",
+        description: "Calculate simple, compound interest and investments",
+        category: "financial"
+      },
+      {
+        id: "loan-calculator",
+        name: "Loan Calculator",
+        description: "Calculate loan payments and amortization",
+        category: "financial"
       }
     ]
   }
@@ -218,7 +243,7 @@ export const getToolById = (id) => {
 
 export const searchTools = (query) => {
   if (!query.trim()) return toolCategories;
-  
+
   const lowerQuery = query.toLowerCase();
   return toolCategories
     .map(category => ({

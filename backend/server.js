@@ -9,6 +9,7 @@ import subscriptionRoutes from './routes/subscription.js';
 import analyticsRoutes from './routes/analytics.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import pdfCompressRoutes from './routes/pdfCompress.js';
+import imageCompressRoutes from './routes/imageCompress.js';
 
 dotenv.config();
 
@@ -33,6 +34,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/subscription', subscriptionRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/pdf', pdfCompressRoutes); // ← Add this
+app.use('/api/image', imageCompressRoutes); // ← And this
 
 // Health check
 app.get('/api/health', (req, res) => {

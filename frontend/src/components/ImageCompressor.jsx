@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
-import { X, Upload, Trash2, Image as ImageIcon, Download, ArrowDown } from 'lucide-react';
+import { X, Upload, Trash2, Image as ImageIcon, Download, ArrowDown, AlertCircle } from 'lucide-react';
+import axios from 'axios';
 import toast from 'react-hot-toast';
 import './ImageCompressor.css';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 function ImageCompressor({ onClose }) {
   const [imageFiles, setImageFiles] = useState([]);
   const [compressing, setCompressing] = useState(false);
   const [quality, setQuality] = useState(0.8);
+  const [backendAvailable, setBackendAvailable] = useState(true);
 
   const handleFileSelect = (e) => {
     const files = Array.from(e.target.files);
@@ -48,15 +52,15 @@ function ImageCompressor({ onClose }) {
           id: Date.now() + index,
           file: file,
           name: file.name,
+          preview: preview,
+          width: dimensions.width,
+          height: dimensions.height,
           originalSize: file.size,
           originalSizeFormatted: formatFileSize(file.size),
           compressedSize: null,
           compressedSizeFormatted: null,
-          preview: preview,
-          dimensions: dimensions,
           status: 'ready',
-          compressedBlob: null,
-          compressedPreview: null
+          compressedBlob: null
         };
       })
     );
@@ -96,43 +100,39 @@ function ImageCompressor({ onClose }) {
     toast.success('Image removed');
   };
 
-  const compressImage = async (fileData) => {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = img.width;
-        canvas.height = img.height;
-        
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0);
-        
-        canvas.toBlob(
-          (blob) => {
-            if (!blob) {
-              reject(new Error('Compression failed'));
-              return;
-            }
-            
-            // Create preview
-            const reader = new FileReader();
-            reader.onload = (e) => {
-              resolve({
-                blob: blob,
-                size: blob.size,
-                preview: e.target.result
-              });
-            };
-            reader.readAsDataURL(blob);
-          },
-          'image/jpeg',
-          quality
-        );
+  const compressImageBackend = async (fileData) => {
+    try {
+      const formData = new FormData();
+      formData.append('image', fileData.file);
+      formData.append('quality', quality);
+      formData.append('format', 'jpeg'); // Can be made configurable
+
+      const response = await axios.post(`${API_URL}/image/compress`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        responseType: 'blob'
+      });
+
+      // Get metadata from response headers
+      const originalSize = parseInt(response.headers['x-original-size'] || fileData.originalSize);
+      const compressedSize = parseInt(response.headers['x-compressed-size'] || response.data.size);
+      const reduction = response.headers['x-reduction'] || 
+        ((originalSize - compressedSize) / originalSize * 100).toFixed(1);
+
+      return {
+        blob: response.data,
+        size: compressedSize,
+        reduction: reduction
       };
-      
-      img.onerror = () => reject(new Error('Failed to load image'));
-      img.src = fileData.preview;
-    });
+    } catch (error) {
+      console.error('Backend compression error:', error);
+      if (error.response?.status === 500) {
+        setBackendAvailable(false);
+        throw new Error('Backend compression failed. Server may not have Sharp installed.');
+      }
+      throw error;
+    }
   };
 
   const compressAllImages = async () => {
@@ -152,11 +152,8 @@ function ImageCompressor({ onClose }) {
           idx === i ? { ...f, status: 'processing' } : f
         ));
 
-        // Compress
-        const { blob, size, preview } = await compressImage(fileData);
-        
-        // Calculate reduction
-        const reduction = ((fileData.originalSize - size) / fileData.originalSize * 100).toFixed(1);
+        // Compress using backend
+        const { blob, size, reduction } = await compressImageBackend(fileData);
         
         // Update with results
         setImageFiles(prev => prev.map((f, idx) => 
@@ -166,7 +163,6 @@ function ImageCompressor({ onClose }) {
             compressedBlob: blob,
             compressedSize: size,
             compressedSizeFormatted: formatFileSize(size),
-            compressedPreview: preview,
             reduction: reduction
           } : f
         ));
@@ -176,10 +172,13 @@ function ImageCompressor({ onClose }) {
 
     } catch (error) {
       console.error('Error compressing images:', error);
-      toast.error('Failed to compress some images');
+      toast.error(error.message || 'Failed to compress some images');
       
       // Reset status
-      setImageFiles(prev => prev.map(f => ({ ...f, status: 'ready' })));
+      setImageFiles(prev => prev.map(f => ({ 
+        ...f, 
+        status: f.status === 'processing' ? 'ready' : f.status 
+      })));
     } finally {
       setCompressing(false);
     }
@@ -223,26 +222,45 @@ function ImageCompressor({ onClose }) {
   };
 
   const getQualityLabel = () => {
-    if (quality >= 0.9) return 'High Quality (90-100%)';
-    if (quality >= 0.7) return 'Good Quality (70-89%)';
-    if (quality >= 0.5) return 'Medium Quality (50-69%)';
-    return 'Low Quality (<50%)';
+    const percent = Math.round(quality * 100);
+    if (quality >= 0.9) return `High Quality (${percent}%)`;
+    if (quality >= 0.7) return `Good Quality (${percent}%) - Recommended`;
+    if (quality >= 0.5) return `Medium Quality (${percent}%)`;
+    return `Low Quality (${percent}%)`;
   };
 
   return (
     <div className="compressor-modal">
       <div className="compressor-container">
         <div className="compressor-header">
-          <div>
-            <h2>Image Compressor</h2>
-            <p>Reduce image file sizes while maintaining quality</p>
-          </div>
+          <h2>Image Compressor</h2>
+          <p>Reduce image file sizes with professional compression</p>
           <button className="close-btn" onClick={onClose}>
             <X size={24} />
           </button>
         </div>
 
         <div className="compressor-content">
+          {/* Backend Status */}
+          {!backendAvailable && (
+            <div className="error-banner">
+              <AlertCircle size={18} />
+              <div>
+                <strong>Backend Error:</strong> Compression server is not available or Sharp is not installed. 
+                Please check the backend setup.
+              </div>
+            </div>
+          )}
+
+          {/* Info Banner */}
+          <div className="info-banner">
+            <AlertCircle size={18} />
+            <div>
+              <strong>Server-Side Compression:</strong> Images are compressed using professional Sharp technology. 
+              Typical compression: 60-80% reduction. Your files are deleted after compression.
+            </div>
+          </div>
+
           {/* Quality Slider */}
           <div className="quality-settings">
             <div className="quality-label">
@@ -256,8 +274,8 @@ function ImageCompressor({ onClose }) {
               step="0.05"
               value={quality}
               onChange={(e) => setQuality(parseFloat(e.target.value))}
-              className="quality-slider"
               disabled={compressing}
+              className="quality-slider"
             />
             <p className="quality-description">{getQualityLabel()}</p>
           </div>
@@ -279,10 +297,10 @@ function ImageCompressor({ onClose }) {
             />
             <Upload size={48} />
             <h3>Drop images here or click to browse</h3>
-            <p>JPG, PNG, WebP supported • Select multiple images</p>
+            <p>Professional compression • Multiple images supported • Max 20MB per file</p>
           </div>
 
-          {/* Image Grid */}
+          {/* Image List */}
           {imageFiles.length > 0 && (
             <div className="files-section">
               <div className="files-header">
@@ -292,66 +310,57 @@ function ImageCompressor({ onClose }) {
                 </button>
               </div>
 
-              <div className="image-grid">
-                {imageFiles.map((file) => (
-                  <div key={file.id} className={`image-card ${file.status}`}>
+              <div className="images-grid">
+                {imageFiles.map((image) => (
+                  <div key={image.id} className={`image-item ${image.status}`}>
                     <div className="image-preview">
-                      <img 
-                        src={file.compressedPreview || file.preview} 
-                        alt={file.name}
-                      />
-                      
-                      {file.status === 'processing' && (
+                      <img src={image.preview} alt={image.name} />
+                      {image.status === 'processing' && (
                         <div className="processing-overlay">
                           <div className="spinner-large"></div>
                         </div>
                       )}
-                      
-                      {file.status === 'completed' && (
+                      {image.status === 'completed' && (
                         <div className="completed-badge">✓</div>
                       )}
                     </div>
-
+                    
                     <div className="image-info">
-                      <div className="image-name">{file.name}</div>
-                      <div className="image-details">
-                        <span>{file.dimensions.width} × {file.dimensions.height}</span>
+                      <div className="image-name">{image.name}</div>
+                      <div className="image-meta">
+                        <span>{image.width} × {image.height}</span>
+                        <span>Original: {image.originalSizeFormatted}</span>
                       </div>
-                      <div className="image-sizes">
-                        <div className="size-item">
-                          <span className="size-label">Original</span>
-                          <span className="size-value">{file.originalSizeFormatted}</span>
+                      {image.compressedSizeFormatted && (
+                        <div className="image-meta compressed">
+                          <ArrowDown size={14} className="arrow-icon" />
+                          <span>Compressed: {image.compressedSizeFormatted}</span>
+                          {parseFloat(image.reduction) > 0 ? (
+                            <span className="reduction-badge">-{image.reduction}%</span>
+                          ) : (
+                            <span className="reduction-badge minimal">No change</span>
+                          )}
                         </div>
-                        {file.compressedSizeFormatted && (
-                          <>
-                            <ArrowDown size={12} className="arrow-icon" />
-                            <div className="size-item compressed">
-                              <span className="size-label">Compressed</span>
-                              <span className="size-value">{file.compressedSizeFormatted}</span>
-                            </div>
-                            <span className="reduction-badge">-{file.reduction}%</span>
-                          </>
-                        )}
-                      </div>
+                      )}
                     </div>
 
                     <div className="image-actions">
-                      {file.status === 'completed' && (
+                      {image.status === 'completed' && (
                         <button
-                          className="btn-icon-small download"
-                          onClick={() => downloadFile(file)}
+                          className="btn-icon download"
+                          onClick={() => downloadFile(image)}
                           title="Download"
                         >
-                          <Download size={16} />
+                          <Download size={18} />
                         </button>
                       )}
                       {!compressing && (
                         <button
-                          className="btn-icon-small delete"
-                          onClick={() => removeFile(file.id)}
+                          className="btn-icon delete"
+                          onClick={() => removeFile(image.id)}
                           title="Remove"
                         >
-                          <Trash2 size={16} />
+                          <Trash2 size={18} />
                         </button>
                       )}
                     </div>
@@ -377,7 +386,7 @@ function ImageCompressor({ onClose }) {
               <button
                 className="btn-primary"
                 onClick={compressAllImages}
-                disabled={compressing}
+                disabled={compressing || !backendAvailable}
               >
                 {compressing ? (
                   <>
@@ -386,7 +395,7 @@ function ImageCompressor({ onClose }) {
                   </>
                 ) : (
                   <>
-                    Compress {imageFiles.length} Image{imageFiles.length > 1 ? 's' : ''}
+                    Compress {imageFiles.length} image{imageFiles.length > 1 ? 's' : ''}
                   </>
                 )}
               </button>
