@@ -247,21 +247,21 @@ function PDFCompressor({ onClose }) {
                 onClick={() => setCompressionLevel('low')}
                 disabled={compressing}
               >
-                Fast
+                <span>Fast</span>
               </button>
               <button
                 className={`level-btn ${compressionLevel === 'medium' ? 'active' : ''}`}
                 onClick={() => setCompressionLevel('medium')}
                 disabled={compressing}
               >
-                Balanced
+                <span>Balanced</span>
               </button>
               <button
                 className={`level-btn ${compressionLevel === 'high' ? 'active' : ''}`}
                 onClick={() => setCompressionLevel('high')}
                 disabled={compressing}
               >
-                Best Quality
+                <span>Best Quality</span>
               </button>
             </div>
             <p className="settings-description">{getCompressionLabel()}</p>

@@ -518,7 +518,7 @@ function InterestCalculator({ onClose }) {
                     {breakdown.map((item) => (
                       <div key={item.year} className="table-row">
                         <div>{item.year}</div>
-                        <div className="amount">{formatCurrency(item.amount)}</div>
+                        <div className="total-amount">{formatCurrency(item.amount)}</div>
                         {mode === 'investment' && (
                           <div>{formatCurrency(item.contributions)}</div>
                         )}

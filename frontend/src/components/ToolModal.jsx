@@ -26,6 +26,7 @@ import Base64Tool from './Base64Tool';
 import PasswordGenerator from './PasswordGenerator';
 import InterestCalculator from './InterestCalculator';
 import LoanCalculator from './LoanCalculator';
+import UUIDGenerator from './UUIDGenerator';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -293,6 +294,10 @@ function ToolModal({ tool, onClose }) {
 
   if (tool.id === 'loan-calculator') {
     return <LoanCalculator onClose={onClose} />;
+  }
+
+  if (tool.id === 'uuid') {
+    return <UUIDGenerator onClose={onClose} />;
   }
 
   return (
