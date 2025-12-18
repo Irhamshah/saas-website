@@ -27,13 +27,18 @@ app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:3000',
   credentials: true
 }));
+
+// 🔥 CRITICAL: Webhook route BEFORE express.json()!
+// This route needs the RAW body!
+app.use('/api/lemonsqueezy/webhooks', express.raw({ type: 'application/json' }));
+
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/subscription', subscriptionRoutes);
+// app.use('/api/subscription', subscriptionRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/pdf', pdfCompressRoutes); // ← Add this
 app.use('/api/image', imageCompressRoutes); // ← And this

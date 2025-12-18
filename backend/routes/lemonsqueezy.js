@@ -1,7 +1,7 @@
 // Backend LemonSqueezy Routes (routes/lemonsqueezy.js)
-// PUT THIS AT THE VERY TOP (BEFORE ANY OTHER IMPORTS!)
 import dotenv from 'dotenv';
 dotenv.config();
+// Backend LemonSqueezy Routes (routes/lemonsqueezy.js)
 import express from 'express';
 import crypto from 'crypto';
 import User from '../models/user.js';
@@ -41,6 +41,7 @@ router.post('/create-checkout', protect, async (req, res) => {
 
     console.log('📋 Request Details:');
     console.log('   User Email:', user.email);
+    console.log('   User ID:', user._id.toString());
     console.log('   Plan:', plan);
     console.log('   Variant ID:', variantId);
     console.log('   Store ID:', LEMONSQUEEZY_STORE_ID);
@@ -72,6 +73,25 @@ router.post('/create-checkout', protect, async (req, res) => {
               plan: plan,
             },
           },
+          // Product options - includes redirect URL!
+          product_options: {
+            redirect_url: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/payment-success`,
+            receipt_button_text: 'Go to Dashboard',
+            receipt_thank_you_note: 'Thank you for upgrading to LiteTools Premium!',
+          },
+          // Checkout styling options
+          checkout_options: {
+            embed: false,
+            media: true,
+            logo: true,
+            desc: true,
+            discount: true,
+            dark: false,
+            subscription_preview: true,
+            button_color: '#2D5BFF',
+          },
+          expires_at: null, // Optional: checkout expiration
+          preview: true, // Show preview before payment
         },
         relationships: {
           store: {
@@ -169,66 +189,121 @@ router.post('/create-checkout', protect, async (req, res) => {
 /**
  * POST /api/lemonsqueezy/webhooks
  * Handle LemonSqueezy webhooks
+ * NOTE: express.raw() is applied in server.js BEFORE this route!
  */
-router.post('/webhooks', express.raw({ type: 'application/json' }), async (req, res) => {
+router.post('/webhooks', async (req, res) => {
   try {
-    // Verify webhook signature
-    const signature = req.headers['x-signature'];
-    const rawBody = req.body.toString('utf8');
+    console.log('\n🔔 ═══════════════════════════════════════════════════════');
+    console.log('🔔 WEBHOOK RECEIVED');
+    console.log('🔔 ═══════════════════════════════════════════════════════');
     
+    // req.body is already a Buffer here (thanks to express.raw in server.js)
+    const rawBody = req.body.toString('utf8');
+    const signature = req.headers['x-signature'];
+    
+    console.log('📋 Webhook Details:');
+    console.log('   Body length:', rawBody.length, 'bytes');
+    console.log('   Signature present:', !!signature);
+    
+    // Validate signature is present
+    if (!signature) {
+      console.error('❌ Missing signature');
+      return res.status(401).json({ error: 'Missing signature' });
+    }
+    
+    // Validate webhook secret is configured
+    if (!LEMONSQUEEZY_WEBHOOK_SECRET) {
+      console.error('❌ LEMONSQUEEZY_WEBHOOK_SECRET not configured!');
+      return res.status(500).json({ error: 'Webhook secret not configured' });
+    }
+    
+    // Verify signature
+    console.log('🔐 Verifying signature...');
     const hmac = crypto.createHmac('sha256', LEMONSQUEEZY_WEBHOOK_SECRET);
-    const digest = hmac.update(rawBody).digest('hex');
-
-    if (signature !== digest) {
-      console.error('Invalid webhook signature');
+    const expectedSig = hmac.update(rawBody).digest('hex');
+    const isValid = expectedSig === signature;
+    
+    if (!isValid) {
+      console.error('❌ SIGNATURE MISMATCH!');
+      console.error('   The webhook signature is invalid.');
+      console.error('   Make sure LEMONSQUEEZY_WEBHOOK_SECRET matches your LemonSqueezy settings.');
+      console.log('🔔 ═══════════════════════════════════════════════════════\n');
       return res.status(401).json({ error: 'Invalid signature' });
     }
 
+    console.log('✅ Signature verified!');
+
     // Parse the webhook data
     const event = JSON.parse(rawBody);
-    const eventName = event.meta.event_name;
+    const eventName = event.meta?.event_name;
     const eventData = event.data;
+    
+    // Custom data is in meta.custom_data, NOT in data.attributes!
+    const customData = event.meta?.custom_data || {};
 
-    console.log(`Received LemonSqueezy webhook: ${eventName}`);
+    console.log('📦 Event Details:');
+    console.log('   Event type:', eventName);
+    console.log('   Subscription ID:', eventData?.id || 'N/A');
+    console.log('   User ID (custom):', customData.user_id || 'N/A');
+    console.log('   Plan (custom):', customData.plan || 'N/A');
+    console.log('   Customer email:', eventData?.attributes?.user_email || 'N/A');
 
     // Handle different event types
     switch (eventName) {
       case 'subscription_created':
-        await handleSubscriptionCreated(eventData);
+        console.log('🎉 Processing subscription_created...');
+        await handleSubscriptionCreated(eventData, event);
         break;
 
       case 'subscription_updated':
+        console.log('🔄 Processing subscription_updated...');
         await handleSubscriptionUpdated(eventData);
         break;
 
       case 'subscription_cancelled':
+        console.log('🚫 Processing subscription_cancelled...');
         await handleSubscriptionCancelled(eventData);
         break;
 
       case 'subscription_resumed':
+        console.log('▶️  Processing subscription_resumed...');
         await handleSubscriptionResumed(eventData);
         break;
 
       case 'subscription_expired':
+        console.log('⏰ Processing subscription_expired...');
         await handleSubscriptionExpired(eventData);
         break;
 
       case 'subscription_payment_success':
+        console.log('💰 Processing subscription_payment_success...');
         await handlePaymentSuccess(eventData);
         break;
 
       case 'subscription_payment_failed':
+        console.log('⚠️  Processing subscription_payment_failed...');
         await handlePaymentFailed(eventData);
         break;
 
+      case 'order_created':
+        console.log('🛒 Processing order_created...');
+        // Handle one-time purchases if needed
+        break;
+
       default:
-        console.log(`Unhandled event type: ${eventName}`);
+        console.log(`⚠️  Unhandled event type: ${eventName}`);
     }
+
+    console.log('✅ Webhook processed successfully!');
+    console.log('🔔 ═══════════════════════════════════════════════════════\n');
 
     res.json({ received: true });
 
   } catch (error) {
-    console.error('Webhook handler error:', error);
+    console.error('💥 Webhook handler error:', error);
+    console.error('   Message:', error.message);
+    console.error('   Stack:', error.stack);
+    console.log('🔔 ═══════════════════════════════════════════════════════\n');
     res.status(500).json({ error: 'Webhook handler failed' });
   }
 });
@@ -316,126 +391,219 @@ router.get('/customer-portal', protect, async (req, res) => {
 });
 
 // Webhook event handlers
-async function handleSubscriptionCreated(data) {
+// NOTE: Pass the FULL event to handlers, not just data!
+async function handleSubscriptionCreated(eventData, event) {
   try {
-    const userId = data.attributes.custom_data?.user_id;
+    console.log('   📝 handleSubscriptionCreated called');
+    
+    // Get user_id from meta.custom_data (NOT from data.attributes!)
+    const userId = event?.meta?.custom_data?.user_id;
+    
     if (!userId) {
-      console.error('No user_id in subscription data');
+      console.error('   ❌ No user_id in webhook meta.custom_data!');
+      console.error('   💡 Make sure checkout includes custom data:');
+      console.error('   checkout_data: { custom: { user_id: "..." } }');
       return;
     }
 
+    console.log('   🔍 Looking for user:', userId);
     const user = await User.findById(userId);
+    
     if (!user) {
-      console.error('User not found:', userId);
+      console.error('   ❌ User not found in database:', userId);
       return;
     }
 
+    console.log('   ✅ User found:', user.email);
+    console.log('   📊 Updating user to premium...');
+
+    // Update user with subscription details
     user.isPremium = true;
-    user.subscriptionId = data.id;
-    user.customerId = data.attributes.customer_id.toString();
-    user.subscriptionStatus = data.attributes.status;
-    user.subscriptionEndDate = new Date(data.attributes.renews_at);
+    user.subscriptionId = eventData.id;
+    user.customerId = eventData.attributes.customer_id?.toString();
+    user.subscriptionStatus = eventData.attributes.status;
+    user.subscriptionEndDate = eventData.attributes.renews_at ? new Date(eventData.attributes.renews_at) : null;
+    
     await user.save();
 
-    console.log(`Subscription created for user: ${user.email}`);
+    console.log('   ✅ Subscription created successfully!');
+    console.log('   👤 User:', user.email);
+    console.log('   🆔 Subscription ID:', eventData.id);
+    console.log('   📅 Renews at:', eventData.attributes.renews_at);
+    
   } catch (error) {
-    console.error('handleSubscriptionCreated error:', error);
+    console.error('   💥 handleSubscriptionCreated error:', error);
+    console.error('   Message:', error.message);
   }
 }
 
 async function handleSubscriptionUpdated(data) {
   try {
+    console.log('   📝 handleSubscriptionUpdated called');
+    console.log('   🔍 Looking for subscription:', data.id);
+    
     const user = await User.findOne({ subscriptionId: data.id });
+    
     if (!user) {
-      console.error('User not found for subscription:', data.id);
+      console.error('   ❌ User not found for subscription:', data.id);
       return;
     }
 
+    console.log('   ✅ User found:', user.email);
+    console.log('   📊 Updating subscription status...');
+
+    // Update subscription details
     user.subscriptionStatus = data.attributes.status;
-    user.subscriptionEndDate = new Date(data.attributes.renews_at);
+    user.subscriptionEndDate = data.attributes.renews_at ? new Date(data.attributes.renews_at) : null;
     user.isPremium = data.attributes.status === 'active';
+    
     await user.save();
 
-    console.log(`Subscription updated for user: ${user.email}`);
+    console.log('   ✅ Subscription updated successfully!');
+    console.log('   👤 User:', user.email);
+    console.log('   📊 Status:', data.attributes.status);
+    console.log('   🔓 Premium:', user.isPremium);
+    
   } catch (error) {
-    console.error('handleSubscriptionUpdated error:', error);
+    console.error('   💥 handleSubscriptionUpdated error:', error);
   }
 }
 
 async function handleSubscriptionCancelled(data) {
   try {
+    console.log('   📝 handleSubscriptionCancelled called');
+    
     const user = await User.findOne({ subscriptionId: data.id });
-    if (!user) return;
+    if (!user) {
+      console.error('   ❌ User not found for subscription:', data.id);
+      return;
+    }
 
+    console.log('   ✅ User found:', user.email);
+    
+    // Mark as cancelled but keep premium until end date
     user.subscriptionStatus = 'cancelled';
-    user.subscriptionEndDate = new Date(data.attributes.ends_at);
-    // Keep isPremium true until ends_at date
+    user.subscriptionEndDate = data.attributes.ends_at ? new Date(data.attributes.ends_at) : null;
+    // Keep isPremium true until ends_at date passes
+    
     await user.save();
 
-    console.log(`Subscription cancelled for user: ${user.email}`);
+    console.log('   ✅ Subscription cancelled');
+    console.log('   👤 User:', user.email);
+    console.log('   📅 Access until:', data.attributes.ends_at);
+    
   } catch (error) {
-    console.error('handleSubscriptionCancelled error:', error);
+    console.error('   💥 handleSubscriptionCancelled error:', error);
   }
 }
 
 async function handleSubscriptionResumed(data) {
   try {
+    console.log('   📝 handleSubscriptionResumed called');
+    
     const user = await User.findOne({ subscriptionId: data.id });
-    if (!user) return;
+    if (!user) {
+      console.error('   ❌ User not found for subscription:', data.id);
+      return;
+    }
 
+    console.log('   ✅ User found:', user.email);
+    
+    // Restore active status
     user.subscriptionStatus = 'active';
     user.isPremium = true;
-    user.subscriptionEndDate = new Date(data.attributes.renews_at);
+    user.subscriptionEndDate = data.attributes.renews_at ? new Date(data.attributes.renews_at) : null;
+    
     await user.save();
 
-    console.log(`Subscription resumed for user: ${user.email}`);
+    console.log('   ✅ Subscription resumed');
+    console.log('   👤 User:', user.email);
+    console.log('   🔓 Premium restored');
+    
   } catch (error) {
-    console.error('handleSubscriptionResumed error:', error);
+    console.error('   💥 handleSubscriptionResumed error:', error);
   }
 }
 
 async function handleSubscriptionExpired(data) {
   try {
+    console.log('   📝 handleSubscriptionExpired called');
+    
     const user = await User.findOne({ subscriptionId: data.id });
-    if (!user) return;
+    if (!user) {
+      console.error('   ❌ User not found for subscription:', data.id);
+      return;
+    }
 
+    console.log('   ✅ User found:', user.email);
+    
+    // Remove premium access
     user.isPremium = false;
     user.subscriptionStatus = 'expired';
+    
     await user.save();
 
-    console.log(`Subscription expired for user: ${user.email}`);
+    console.log('   ✅ Subscription expired');
+    console.log('   👤 User:', user.email);
+    console.log('   🔒 Premium access removed');
+    
   } catch (error) {
-    console.error('handleSubscriptionExpired error:', error);
+    console.error('   💥 handleSubscriptionExpired error:', error);
   }
 }
 
 async function handlePaymentSuccess(data) {
   try {
+    console.log('   📝 handlePaymentSuccess called');
+    
     const user = await User.findOne({ subscriptionId: data.id });
-    if (!user) return;
+    if (!user) {
+      console.error('   ❌ User not found for subscription:', data.id);
+      return;
+    }
 
-    user.subscriptionEndDate = new Date(data.attributes.renews_at);
+    console.log('   ✅ User found:', user.email);
+    
+    // Ensure premium is active
+    user.subscriptionEndDate = data.attributes.renews_at ? new Date(data.attributes.renews_at) : null;
     user.isPremium = true;
     user.subscriptionStatus = 'active';
+    
     await user.save();
 
-    console.log(`Payment succeeded for user: ${user.email}`);
+    console.log('   ✅ Payment processed successfully');
+    console.log('   👤 User:', user.email);
+    console.log('   💰 Subscription renewed until:', data.attributes.renews_at);
+    
   } catch (error) {
-    console.error('handlePaymentSuccess error:', error);
+    console.error('   💥 handlePaymentSuccess error:', error);
   }
 }
 
 async function handlePaymentFailed(data) {
   try {
+    console.log('   📝 handlePaymentFailed called');
+    
     const user = await User.findOne({ subscriptionId: data.id });
-    if (!user) return;
+    if (!user) {
+      console.error('   ❌ User not found for subscription:', data.id);
+      return;
+    }
 
+    console.log('   ✅ User found:', user.email);
+    
+    // Mark as past due (but don't remove premium yet - give them time to fix payment)
     user.subscriptionStatus = 'past_due';
+    
     await user.save();
 
-    console.log(`Payment failed for user: ${user.email}`);
+    console.log('   ⚠️  Payment failed');
+    console.log('   👤 User:', user.email);
+    console.log('   📊 Status: past_due');
+    console.log('   💡 User should update payment method');
+    
   } catch (error) {
-    console.error('handlePaymentFailed error:', error);
+    console.error('   💥 handlePaymentFailed error:', error);
   }
 }
 

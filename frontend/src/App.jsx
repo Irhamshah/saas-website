@@ -19,6 +19,7 @@ import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
 import Pricing from './pages/PricingPage';
 import Payment from './pages/Payment';
+import PaymentSuccess from './pages/PaymentSuccess';
 import './App.css';
 
 function AppContent() {
@@ -66,6 +67,7 @@ function AppContent() {
           <Route path="/converters" element={<ConverterToolsPage />} />
           <Route path="/generators" element={<GeneratorToolsPage />} />
           <Route path="/payment" element={<Payment />} />
+          <Route path="/payment-success" element={<PaymentSuccess />} />
         </Routes>
       </main>
       

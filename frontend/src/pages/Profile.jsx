@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import './Profile.css';
+import CancelSubscriptionModal from '../components/CancelSubscriptionModal';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
 
@@ -13,7 +14,10 @@ function Profile() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'profile');
-  
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -21,7 +25,7 @@ function Profile() {
     newPassword: '',
     confirmPassword: ''
   });
-  
+
   const [loading, setLoading] = useState(false);
   const [subscriptionData, setSubscriptionData] = useState(null);
 
@@ -50,6 +54,15 @@ function Profile() {
       setActiveTab(tab);
     }
   }, [searchParams]);
+
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
 
   const fetchSubscriptionData = async () => {
     try {
@@ -98,7 +111,7 @@ function Profile() {
 
   const handleChangePassword = async (e) => {
     e.preventDefault();
-    
+
     if (formData.newPassword !== formData.confirmPassword) {
       toast.error('New passwords do not match');
       return;
@@ -138,28 +151,38 @@ function Profile() {
     }
   };
 
-  const handleCancelSubscription = async () => {
-    if (!confirm('Are you sure you want to cancel your subscription?')) {
-      return;
-    }
-
+  const handleCancelSubscription = async (reason) => {
     setLoading(true);
+    setError('');
+    setSuccess('');
 
     try {
       const token = localStorage.getItem('token');
-      await axios.post(
-        `${API_URL}/subscription/cancel`,
-        {},
+      
+      const response = await axios.post(
+        `${API_URL}/lemonsqueezy/cancel-subscription`,
+        { reason },
         {
           headers: { Authorization: `Bearer ${token}` }
         }
       );
 
-      updateUser({ isPremium: false });
-      toast.success('Subscription cancelled successfully');
-      setSubscriptionData(null);
-    } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to cancel subscription');
+      setSuccess('Subscription cancelled successfully! You\'ll have access until ' + 
+        formatDate(user.subscriptionEndDate));
+      
+      // Refresh user data
+      const userResponse = await axios.get(`${API_URL}/auth/me`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      updateUser(userResponse.data);
+      
+      if (user.isPremium) {
+        await fetchSubscriptionData();
+      }
+
+    } catch (err) {
+      setError(err.response?.data?.error || err.message || 'Failed to cancel subscription');
     } finally {
       setLoading(false);
     }
@@ -176,6 +199,20 @@ function Profile() {
   return (
     <div className="profile-page">
       <div className="profile-container">
+        {error && (
+          <div className="alert alert-error">
+            <AlertCircle size={20} />
+            {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="alert alert-success">
+            <Check size={20} />
+            {success}
+          </div>
+        )}
+        
         <div className="profile-header">
           <div className="profile-avatar">
             {user.name ? user.name.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
@@ -332,7 +369,7 @@ function Profile() {
                       </p>
                     </div>
                   </div>
-                  
+
                   <div className="stat-card">
                     <Shield size={24} />
                     <div>
@@ -350,7 +387,7 @@ function Profile() {
           {activeTab === 'subscription' && (
             <div className="subscription-section">
               <h2>Subscription Management</h2>
-              
+
               {user.isPremium ? (
                 <div className="subscription-active">
                   <div className="subscription-status">
@@ -373,11 +410,19 @@ function Profile() {
                       <span>Price</span>
                       <strong>$4.99/month</strong>
                     </div>
-                    {subscriptionData?.nextBillingDate && (
+                    {user.subscriptionEndDate && (
                       <div className="detail-row">
-                        <span>Next Billing</span>
-                        <strong>
-                          {new Date(subscriptionData.nextBillingDate).toLocaleDateString()}
+                        <span>
+                          {user.subscriptionStatus === 'cancelled' ? 'Access Until' : 'Next Billing'}
+                        </span>
+                        <strong>{formatDate(user.subscriptionEndDate)}</strong>
+                      </div>
+                    )}
+                    {user.subscriptionStatus && (
+                      <div className="detail-row">
+                        <span>Status</span>
+                        <strong className={`status-${user.subscriptionStatus}`}>
+                          {user.subscriptionStatus.charAt(0).toUpperCase() + user.subscriptionStatus.slice(1)}
                         </strong>
                       </div>
                     )}
@@ -394,16 +439,35 @@ function Profile() {
                     </ul>
                   </div>
 
-                  <button
-                    className="btn-danger"
-                    onClick={handleCancelSubscription}
-                    disabled={loading}
-                  >
-                    {loading ? 'Cancelling...' : 'Cancel Subscription'}
-                  </button>
-                  <p className="cancel-note">
-                    Your subscription will remain active until the end of the current billing period.
-                  </p>
+                  {user.isPremium && (
+                    <>
+                      <button
+                        className="btn-danger"
+                        onClick={() => setShowCancelModal(true)}
+                        disabled={loading}
+                      >
+                        Cancel Subscription
+                      </button>
+                      <p className="cancel-note">
+                        Your subscription will remain active until the end of the current billing period.
+                      </p>
+                    </>
+                  )}
+
+                  {!user.isPremium && (
+                    <div className="cancellation-notice">
+                      <AlertCircle size={20} />
+                      <p>
+                        Your subscription has been cancelled. You'll continue to have premium access until {formatDate(user.subscriptionEndDate)}.
+                      </p>
+                      <button
+                        className="btn-primary"
+                        onClick={handleUpgradeToPremium}
+                      >
+                        Reactivate Subscription
+                      </button>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="subscription-inactive">
@@ -456,6 +520,14 @@ function Profile() {
           )}
         </div>
       </div>
+
+      {/* Cancel Subscription Modal */}
+      <CancelSubscriptionModal
+        isOpen={showCancelModal}
+        onClose={() => setShowCancelModal(false)}
+        onConfirm={handleCancelSubscription}
+        subscriptionEndDate={formatDate(user?.subscriptionEndDate)}
+      />
     </div>
   );
 }
