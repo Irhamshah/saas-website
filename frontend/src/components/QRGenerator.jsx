@@ -3,6 +3,8 @@ import { X, Download, Copy, Check, Link as LinkIcon, Wifi, Mail, Phone, MessageS
 import QRCode from 'qrcode';
 import toast from 'react-hot-toast';
 import './QRGenerator.css';
+import { useUsageLimit } from '../hooks/useUsageLimit';
+import UsageIndicator from './UsageIndicator';
 
 function QRGenerator({ onClose }) {
   const [qrType, setQrType] = useState('url'); // url, text, wifi, email, phone, sms
@@ -28,6 +30,17 @@ function QRGenerator({ onClose }) {
   // Phone/SMS specific fields
   const [phoneNumber, setPhoneNumber] = useState('');
   const [smsMessage, setSmsMessage] = useState('');
+
+  // Usage limit hook
+  const {
+    usageCount,
+    usageRemaining,
+    usagePercentage,
+    canUse,
+    isPremium,
+    incrementUsage,
+    showLimitError,
+  } = useUsageLimit('qr', 3);
 
   const getQRContent = () => {
     switch (qrType) {
@@ -65,6 +78,11 @@ function QRGenerator({ onClose }) {
   };
 
   const generateQR = async () => {
+    if (!canUse) {
+      showLimitError();
+      return;
+    }
+
     const content = getQRContent();
     
     if (!content) {
@@ -87,6 +105,7 @@ function QRGenerator({ onClose }) {
 
       const dataUrl = await QRCode.toDataURL(content, options);
       setQrImage(dataUrl);
+      await incrementUsage();
       toast.success('QR code generated! 🎉');
     } catch (error) {
       console.error('QR generation error:', error);
@@ -312,6 +331,12 @@ function QRGenerator({ onClose }) {
 
         <div className="qr-content">
           <div className="qr-left">
+            <UsageIndicator
+            usageCount={usageCount}
+            usageRemaining={usageRemaining}
+            usagePercentage={usagePercentage}
+            isPremium={isPremium}
+          />
             {/* QR Type Selection */}
             <div className="type-selection">
               <label>QR Code Type</label>

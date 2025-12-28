@@ -2,6 +2,8 @@ import React, { useState, useRef } from 'react';
 import { X, Copy, Check, Download, Upload, Minimize2, Maximize2, AlertCircle, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import './JSONFormatter.css';
+import UsageIndicator from './UsageIndicator';
+import { useUsageLimit } from '../hooks/useUsageLimit';
 
 function JSONFormatter({ onClose }) {
   const [input, setInput] = useState('');
@@ -14,8 +16,23 @@ function JSONFormatter({ onClose }) {
   const [stats, setStats] = useState(null);
   const fileInputRef = useRef(null);
 
+  const {
+    usageCount,
+    usageRemaining,
+    usagePercentage,
+    canUse,
+    isPremium,
+    incrementUsage,
+    showLimitError,
+  } = useUsageLimit('json-formatter', 3);
+
   // Format JSON
-  const formatJSON = (text, indent, sort) => {
+  const formatJSON = async (text, indent, sort) => {
+    if (!canUse) {
+      showLimitError();
+      return;
+    }
+
     try {
       let parsed = JSON.parse(text);
       
@@ -40,6 +57,7 @@ function JSONFormatter({ onClose }) {
       setIsValid(true);
       setError('');
       setStats(stats);
+      await incrementUsage();
       toast.success('JSON formatted successfully!');
     } catch (err) {
       setIsValid(false);
@@ -260,6 +278,12 @@ function JSONFormatter({ onClose }) {
         </div>
 
         <div className="formatter-content">
+          <UsageIndicator
+            usageCount={usageCount}
+            usageRemaining={usageRemaining}
+            usagePercentage={usagePercentage}
+            isPremium={isPremium}
+          />
           {/* Controls */}
           <div className="controls-section">
             <div className="controls-group">

@@ -3,6 +3,8 @@ import { X, Upload, Trash2, FileText, Download, ArrowDown, Settings, AlertCircle
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import './PDFCompressor.css';
+import { useUsageLimit } from '../hooks/useUsageLimit';
+import UsageIndicator from './UsageIndicator';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -16,6 +18,16 @@ function PDFCompressor({ onClose }) {
     const files = Array.from(e.target.files);
     addFiles(files);
   };
+
+  const {
+    usageCount,
+    usageRemaining,
+    usagePercentage,
+    canUse,
+    isPremium,
+    incrementUsage,
+    showLimitError,
+  } = useUsageLimit('pdf-compress', 3);
 
   const handleDrop = (e) => {
     e.preventDefault();
@@ -107,6 +119,11 @@ function PDFCompressor({ onClose }) {
   };
 
   const compressAllPDFs = async () => {
+    if (!canUse) {
+      showLimitError();
+      return;
+    }
+
     if (pdfFiles.length === 0) {
       toast.error('Please add PDF files to compress');
       return;
@@ -138,6 +155,8 @@ function PDFCompressor({ onClose }) {
           } : f
         ));
       }
+
+      await incrementUsage();
 
       toast.success('All PDFs compressed successfully! 🎉');
 
@@ -215,6 +234,12 @@ function PDFCompressor({ onClose }) {
         </div>
 
         <div className="compressor-content">
+          <UsageIndicator
+            usageCount={usageCount}
+            usageRemaining={usageRemaining}
+            usagePercentage={usagePercentage}
+            isPremium={isPremium}
+          />
           {/* Backend Status */}
           {!backendAvailable && (
             <div className="error-banner">

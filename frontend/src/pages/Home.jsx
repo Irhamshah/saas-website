@@ -65,118 +65,140 @@ function Home() {
   ];
 
   return (
-    <div className="home">
-      <SEO 
-        title="Free Online Tools - No Sign-up Required"
-        description="50+ free online tools for text editing, image processing, PDF manipulation, development, financial calculations, and more. Privacy-first, no registration needed."
-        keywords="online tools, free tools, text tools, image tools, pdf tools, developer tools, no signup"
-      />
-      
-      {/* Hero Section */}
-      <section className="hero">
-        <div className="hero-content">
-          <h1 className="hero-title">
-            <span className="gradient-text">LiteTools</span>
-          </h1>
-          <p className="hero-subtitle">
-            Your Swiss Army Knife for Digital Tasks
-          </p>
-          <p className="hero-description">
-            Fast, free, and privacy-focused tools for everyday tasks. No sign-up required.
-            All processing happens in your browser.
-          </p>
-          <div className="hero-stats">
-            <div className="stat">
-              <div className="stat-value">50+</div>
-              <div className="stat-label">Tools</div>
-            </div>
-            <div className="stat">
-              <div className="stat-value">100%</div>
-              <div className="stat-label">Free</div>
-            </div>
-            <div className="stat">
-              <div className="stat-value">0</div>
-              <div className="stat-label">Sign-ups</div>
-            </div>
-          </div>
+    // ✅ WRAPPER WITH ADS
+    <div className="home-with-ads">
+      {/* ✅ LEFT SIDEBAR AD */}
+      <aside className="home-ad-sidebar-left">
+        <div className="home-ad-banner">
+          {/* Your ad code here - Google AdSense, etc. */}
+          <span>160 x 600<br/>Ad Space</span>
         </div>
-      </section>
+      </aside>
 
-      {/* Categories Grid */}
-      <section className="categories">
-        <div className="categories-header">
-          <h2>Explore Tool Categories</h2>
-          <p>Choose a category to get started</p>
-        </div>
-        <div className="categories-grid">
-          {categories.map((category) => {
-            const Icon = category.icon;
-            return (
-              <Link
-                key={category.path}
-                to={category.path}
-                className="category-card"
-                style={{ '--category-color': category.color }}
-              >
-                <div className="category-icon" style={{ background: `${category.color}15` }}>
-                  <Icon size={32} style={{ color: category.color }} />
+      {/* ✅ MAIN CONTENT (narrower now) */}
+      <div className="home-content">
+        <div className="home">
+          <SEO 
+            title="Free Online Tools - No Sign-up Required"
+            description="50+ free online tools for text editing, image processing, PDF manipulation, development, financial calculations, and more. Privacy-first, no registration needed."
+            keywords="online tools, free tools, text tools, image tools, pdf tools, developer tools, no signup"
+          />
+          
+          {/* Hero Section */}
+          <section className="hero">
+            <div className="hero-content">
+              <h1 className="hero-title">
+                <span className="gradient-text">LiteTools</span>
+              </h1>
+              <p className="hero-subtitle">
+                Your Swiss Army Knife for Digital Tasks
+              </p>
+              <p className="hero-description">
+                Fast, free, and privacy-focused tools for everyday tasks. No sign-up required.
+                All processing happens in your browser.
+              </p>
+              <div className="hero-stats">
+                <div className="stat">
+                  <div className="stat-value">50+</div>
+                  <div className="stat-label">Tools</div>
                 </div>
-                <h3 className="category-name">{category.name}</h3>
-                <p className="category-description">{category.description}</p>
-                <div className="category-tools">
-                  {category.tools.map((tool, index) => (
-                    <span key={index} className="tool-tag">
-                      {tool}
-                    </span>
-                  ))}
+                <div className="stat">
+                  <div className="stat-value">100%</div>
+                  <div className="stat-label">Free</div>
                 </div>
-                <div className="category-arrow">
-                  <ArrowRight size={20} />
+                <div className="stat">
+                  <div className="stat-value">0</div>
+                  <div className="stat-label">Sign-ups</div>
                 </div>
-              </Link>
-            );
-          })}
-        </div>
-      </section>
+              </div>
+            </div>
+          </section>
 
-      {/* Features Section */}
-      <section className="features">
-        <div className="features-header">
-          <h2>Why Choose LiteTools?</h2>
+          {/* Categories Grid */}
+          <section className="categories">
+            <div className="categories-header">
+              <h2>Explore Tool Categories</h2>
+              <p>Choose a category to get started</p>
+            </div>
+            <div className="categories-grid">
+              {categories.map((category) => {
+                const Icon = category.icon;
+                return (
+                  <Link
+                    key={category.path}
+                    to={category.path}
+                    className="category-card"
+                    style={{ '--category-color': category.color }}
+                  >
+                    <div className="category-icon" style={{ background: `${category.color}15` }}>
+                      <Icon size={28} style={{ color: category.color }} />
+                    </div>
+                    <h3 className="category-name">{category.name}</h3>
+                    <p className="category-description">{category.description}</p>
+                    <div className="category-tools">
+                      {category.tools.map((tool, index) => (
+                        <span key={index} className="tool-tag">
+                          {tool}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="category-arrow">
+                      <ArrowRight size={20} />
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* Features Section */}
+          <section className="features">
+            <div className="features-header">
+              <h2>Why Choose LiteTools?</h2>
+            </div>
+            <div className="features-grid">
+              <div className="feature-card">
+                <div className="feature-icon">🔒</div>
+                <h3>Privacy First</h3>
+                <p>All processing happens in your browser. Your data never leaves your device.</p>
+              </div>
+              <div className="feature-card">
+                <div className="feature-icon">⚡</div>
+                <h3>Lightning Fast</h3>
+                <p>No server round-trips. Everything runs locally for instant results.</p>
+              </div>
+              <div className="feature-card">
+                <div className="feature-icon">🎨</div>
+                <h3>Beautiful UI</h3>
+                <p>Clean, modern interface designed for productivity and ease of use.</p>
+              </div>
+              <div className="feature-card">
+                <div className="feature-icon">📱</div>
+                <h3>Fully Responsive</h3>
+                <p>Works perfectly on desktop, tablet, and mobile devices.</p>
+              </div>
+              <div className="feature-card">
+                <div className="feature-icon">🆓</div>
+                <h3>100% Free</h3>
+                <p>No subscriptions, no hidden fees. All tools are completely free forever.</p>
+              </div>
+              <div className="feature-card">
+                <div className="feature-icon">🚀</div>
+                <h3>No Sign-up</h3>
+                <p>Jump right in and start using tools immediately. No account needed.</p>
+              </div>
+            </div>
+          </section>
         </div>
-        <div className="features-grid">
-          <div className="feature-card">
-            <div className="feature-icon">🔒</div>
-            <h3>Privacy First</h3>
-            <p>All processing happens in your browser. Your data never leaves your device.</p>
-          </div>
-          <div className="feature-card">
-            <div className="feature-icon">⚡</div>
-            <h3>Lightning Fast</h3>
-            <p>No server round-trips. Everything runs locally for instant results.</p>
-          </div>
-          <div className="feature-card">
-            <div className="feature-icon">🎨</div>
-            <h3>Beautiful UI</h3>
-            <p>Clean, modern interface designed for productivity and ease of use.</p>
-          </div>
-          <div className="feature-card">
-            <div className="feature-icon">📱</div>
-            <h3>Fully Responsive</h3>
-            <p>Works perfectly on desktop, tablet, and mobile devices.</p>
-          </div>
-          <div className="feature-card">
-            <div className="feature-icon">🆓</div>
-            <h3>100% Free</h3>
-            <p>No subscriptions, no hidden fees. All tools are completely free forever.</p>
-          </div>
-          <div className="feature-card">
-            <div className="feature-icon">🚀</div>
-            <h3>No Sign-up</h3>
-            <p>Jump right in and start using tools immediately. No account needed.</p>
-          </div>
+      </div>
+
+      {/* ✅ RIGHT SIDEBAR AD */}
+      <aside className="home-ad-sidebar-right">
+        <div className="home-ad-banner">
+          {/* Your ad code here */}
+          <span>160 x 600<br/>Ad Space</span>
         </div>
-      </section>
+      </aside>
     </div>
   );
 }

@@ -7,3 +7,8 @@ html {
   display: flex;
   flex-direction: column;
 }
+
+/* Scale down entire site */
+body {
+  zoom: 0.85; /* 85% of original size - adjust as needed */
+}

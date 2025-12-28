@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { X, Home, Car, CreditCard, DollarSign, Percent, Calendar, Download, TrendingDown } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, Home, Car, CreditCard, DollarSign, Percent, Calendar, Download, TrendingDown, Calculator } from 'lucide-react';
 import toast from 'react-hot-toast';
 import './LoanCalculator.css';
+import { useUsageLimit } from '../hooks/useUsageLimit';
+import UsageIndicator from './UsageIndicator';
 
 function LoanCalculator({ onClose }) {
   const [loanType, setLoanType] = useState('mortgage'); // 'mortgage', 'auto', 'personal'
@@ -15,19 +17,41 @@ function LoanCalculator({ onClose }) {
   const [results, setResults] = useState(null);
   const [schedule, setSchedule] = useState([]);
 
-  // Calculate loan
-  useEffect(() => {
-    calculateLoan();
-  }, [loanAmount, interestRate, loanTerm, termUnit, downPayment, extraPayment]);
+  // ✅ Usage limit hook
+  const {
+    usageCount,
+    usageRemaining,
+    usagePercentage,
+    canUse,
+    isPremium,
+    incrementUsage,
+    showLimitError,
+  } = useUsageLimit('loan-calculator', 3);
 
-  const calculateLoan = () => {
+  // ✅ Calculate loan on button click
+  const handleCalculate = async () => {
+    // ✅ CHECK LIMIT FIRST
+    if (!canUse) {
+      showLimitError();
+      return;
+    }
+
     const principal = loanAmount - downPayment;
     const monthlyRate = interestRate / 100 / 12;
     const months = termUnit === 'years' ? loanTerm * 12 : loanTerm;
 
-    if (principal <= 0 || monthlyRate <= 0 || months <= 0) {
-      setResults(null);
-      setSchedule([]);
+    if (principal <= 0) {
+      toast.error('Loan amount must be greater than down payment');
+      return;
+    }
+
+    if (monthlyRate <= 0) {
+      toast.error('Interest rate must be greater than 0');
+      return;
+    }
+
+    if (months <= 0) {
+      toast.error('Loan term must be greater than 0');
       return;
     }
 
@@ -86,6 +110,11 @@ function LoanCalculator({ onClose }) {
     });
 
     setSchedule(scheduleData);
+
+    // ✅ INCREMENT USAGE AFTER SUCCESS
+    await incrementUsage();
+    
+    toast.success('Loan calculated successfully!');
   };
 
   // Apply preset
@@ -96,18 +125,21 @@ function LoanCalculator({ onClose }) {
         setInterestRate(4.5);
         setLoanTerm(30);
         setDownPayment(60000);
+        setExtraPayment(0);
         break;
       case 'auto':
         setLoanAmount(35000);
         setInterestRate(6.0);
         setLoanTerm(5);
         setDownPayment(5000);
+        setExtraPayment(0);
         break;
       case 'personal':
         setLoanAmount(15000);
         setInterestRate(8.5);
         setLoanTerm(3);
         setDownPayment(0);
+        setExtraPayment(0);
         break;
     }
     setLoanType(type);
@@ -161,6 +193,13 @@ function LoanCalculator({ onClose }) {
     }).format(value);
   };
 
+  // ✅ Clear results
+  const handleClear = () => {
+    setResults(null);
+    setSchedule([]);
+    toast.success('Results cleared');
+  };
+
   return (
     <div className="interest-modal">
       <div className="interest-container">
@@ -173,6 +212,14 @@ function LoanCalculator({ onClose }) {
         </div>
 
         <div className="interest-content">
+          {/* ✅ USAGE INDICATOR */}
+          <UsageIndicator
+            usageCount={usageCount}
+            usageRemaining={usageRemaining}
+            usagePercentage={usagePercentage}
+            isPremium={isPremium}
+          />
+
           {/* Presets */}
           <div className="presets-section">
             <label>Quick Presets:</label>
@@ -180,6 +227,7 @@ function LoanCalculator({ onClose }) {
               <button
                 className={`preset-btn ${loanType === 'mortgage' ? 'active' : ''}`}
                 onClick={() => applyPreset('mortgage')}
+                disabled={!canUse} // ✅ DISABLE IF LIMIT REACHED
               >
                 <Home size={18} />
                 Mortgage
@@ -187,6 +235,7 @@ function LoanCalculator({ onClose }) {
               <button
                 className={`preset-btn ${loanType === 'auto' ? 'active' : ''}`}
                 onClick={() => applyPreset('auto')}
+                disabled={!canUse} // ✅ DISABLE IF LIMIT REACHED
               >
                 <Car size={18} />
                 Auto Loan
@@ -194,6 +243,7 @@ function LoanCalculator({ onClose }) {
               <button
                 className={`preset-btn ${loanType === 'personal' ? 'active' : ''}`}
                 onClick={() => applyPreset('personal')}
+                disabled={!canUse} // ✅ DISABLE IF LIMIT REACHED
               >
                 <CreditCard size={18} />
                 Personal Loan
@@ -214,8 +264,8 @@ function LoanCalculator({ onClose }) {
                   type="number"
                   value={loanAmount}
                   onChange={(e) => setLoanAmount(Number(e.target.value))}
-                  min="0"
                   step="1000"
+                  disabled={!canUse} // ✅ DISABLE IF LIMIT REACHED
                 />
               </div>
             </div>
@@ -231,8 +281,8 @@ function LoanCalculator({ onClose }) {
                   type="number"
                   value={downPayment}
                   onChange={(e) => setDownPayment(Number(e.target.value))}
-                  min="0"
                   step="1000"
+                  disabled={!canUse} // ✅ DISABLE IF LIMIT REACHED
                 />
               </div>
             </div>
@@ -247,9 +297,9 @@ function LoanCalculator({ onClose }) {
                   type="number"
                   value={interestRate}
                   onChange={(e) => setInterestRate(Number(e.target.value))}
-                  min="0"
                   max="30"
                   step="0.1"
+                  disabled={!canUse} // ✅ DISABLE IF LIMIT REACHED
                 />
                 <span className="suffix">%</span>
               </div>
@@ -267,8 +317,13 @@ function LoanCalculator({ onClose }) {
                   onChange={(e) => setLoanTerm(Number(e.target.value))}
                   min="1"
                   step="1"
+                  disabled={!canUse} // ✅ DISABLE IF LIMIT REACHED
                 />
-                <select value={termUnit} onChange={(e) => setTermUnit(e.target.value)}>
+                <select 
+                  value={termUnit} 
+                  onChange={(e) => setTermUnit(e.target.value)}
+                  disabled={!canUse} // ✅ DISABLE IF LIMIT REACHED
+                >
                   <option value="months">Months</option>
                   <option value="years">Years</option>
                 </select>
@@ -286,11 +341,31 @@ function LoanCalculator({ onClose }) {
                   type="number"
                   value={extraPayment}
                   onChange={(e) => setExtraPayment(Number(e.target.value))}
-                  min="0"
                   step="50"
+                  disabled={!canUse} // ✅ DISABLE IF LIMIT REACHED
                 />
               </div>
             </div>
+          </div>
+
+          {/* ✅ CALCULATE BUTTON */}
+          <div className="calculate-section">
+            <button 
+              className="btn-calculate"
+              onClick={handleCalculate}
+              disabled={!canUse} // ✅ DISABLE IF LIMIT REACHED
+            >
+              <Calculator size={20} />
+              Calculate Loan
+            </button>
+            {results && (
+              <button 
+                className="btn-clear"
+                onClick={handleClear}
+              >
+                Clear Results
+              </button>
+            )}
           </div>
 
           {/* Actions */}

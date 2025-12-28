@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { X, Copy, Check, AlertCircle, CheckCircle, Search, FileText, Zap } from 'lucide-react';
 import toast from 'react-hot-toast';
 import './RegexTester.css';
+import { useUsageLimit } from '../hooks/useUsageLimit';
+import UsageIndicator from './UsageIndicator';
 
 function RegexTester({ onClose }) {
   const [pattern, setPattern] = useState('');
@@ -11,6 +13,7 @@ function RegexTester({ onClose }) {
   const [error, setError] = useState('');
   const [stats, setStats] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [hasTestedOnce, setHasTestedOnce] = useState(false); // ✅ Track if user tested
 
   // Common regex patterns
   const commonPatterns = {
@@ -24,9 +27,28 @@ function RegexTester({ onClose }) {
     hashtag: { pattern: '#[a-zA-Z0-9_]+', description: 'Hashtag' },
   };
 
-  // Test regex
+  // ✅ Usage limit hook
+  const {
+    usageCount,
+    usageRemaining,
+    usagePercentage,
+    canUse,
+    isPremium,
+    incrementUsage,
+    showLimitError,
+  } = useUsageLimit('regex', 3);
+
+  // ✅ Test regex with usage tracking
   useEffect(() => {
     if (!pattern || !testString) {
+      setMatches([]);
+      setStats(null);
+      setError('');
+      return;
+    }
+
+    // ✅ CHECK LIMIT BEFORE PROCESSING
+    if (!canUse && !hasTestedOnce) {
       setMatches([]);
       setStats(null);
       setError('');
@@ -38,10 +60,10 @@ function RegexTester({ onClose }) {
         .filter(([_, value]) => value)
         .map(([key]) => key)
         .join('');
-      
+
       const regex = new RegExp(pattern, flagString);
       const foundMatches = [];
-      
+
       if (flags.g) {
         // Global search
         let match;
@@ -65,10 +87,10 @@ function RegexTester({ onClose }) {
           });
         }
       }
-      
+
       setMatches(foundMatches);
       setError('');
-      
+
       // Calculate statistics
       if (foundMatches.length > 0) {
         setStats({
@@ -81,6 +103,12 @@ function RegexTester({ onClose }) {
       } else {
         setStats(null);
       }
+
+      // ✅ INCREMENT USAGE ON FIRST TEST
+      if (!hasTestedOnce && canUse) {
+        incrementUsage();
+        setHasTestedOnce(true);
+      }
     } catch (err) {
       setError(err.message);
       setMatches([]);
@@ -88,15 +116,25 @@ function RegexTester({ onClose }) {
     }
   }, [pattern, flags, testString]);
 
-  // Load common pattern
+  // ✅ Load pattern with limit check
   const loadPattern = (key) => {
+    if (!canUse && !hasTestedOnce) {
+      showLimitError();
+      return;
+    }
+
     setPattern(commonPatterns[key].pattern);
     setFlags({ g: true, i: false, m: false, s: false });
     toast.success(`Loaded ${commonPatterns[key].description} pattern`);
   };
 
-  // Load sample
+  // ✅ Load sample with limit check
   const loadSample = () => {
+    if (!canUse && !hasTestedOnce) {
+      showLimitError();
+      return;
+    }
+
     setPattern('[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}');
     setTestString('Contact us at support@example.com or sales@company.org for more information. You can also reach admin@test.co.uk');
     setFlags({ g: true, i: false, m: false, s: false });
@@ -126,10 +164,10 @@ function RegexTester({ onClose }) {
   // Highlight matches in text
   const getHighlightedText = () => {
     if (matches.length === 0) return testString;
-    
+
     const parts = [];
     let lastIndex = 0;
-    
+
     matches.forEach((match, i) => {
       // Add text before match
       if (match.index > lastIndex) {
@@ -138,17 +176,17 @@ function RegexTester({ onClose }) {
           isMatch: false
         });
       }
-      
+
       // Add match
       parts.push({
         text: match.text,
         isMatch: true,
         index: i
       });
-      
+
       lastIndex = match.index + match.length;
     });
-    
+
     // Add remaining text
     if (lastIndex < testString.length) {
       parts.push({
@@ -156,17 +194,18 @@ function RegexTester({ onClose }) {
         isMatch: false
       });
     }
-    
+
     return parts;
   };
 
-  // Clear all
+  // ✅ Clear all and reset usage flag
   const handleClear = () => {
     setPattern('');
     setTestString('');
     setMatches([]);
     setStats(null);
     setError('');
+    setHasTestedOnce(false); // ✅ Reset so they can test again
     toast.success('Cleared!');
   };
 
@@ -182,6 +221,14 @@ function RegexTester({ onClose }) {
         </div>
 
         <div className="regex-content">
+          {/* ✅ ADD USAGE INDICATOR */}
+          <UsageIndicator
+            usageCount={usageCount}
+            usageRemaining={usageRemaining}
+            usagePercentage={usagePercentage}
+            isPremium={isPremium}
+          />
+
           {/* Pattern Section */}
           <div className="pattern-section">
             <div className="pattern-input-wrapper">
@@ -193,6 +240,7 @@ function RegexTester({ onClose }) {
                 placeholder="Enter your regex pattern..."
                 className="pattern-input"
                 spellCheck={false}
+                disabled={!canUse && !hasTestedOnce} // ✅ DISABLE IF LIMIT REACHED
               />
               <div className="pattern-suffix">/</div>
               <div className="flags-group">
@@ -202,6 +250,7 @@ function RegexTester({ onClose }) {
                       type="checkbox"
                       checked={flags[flag]}
                       onChange={(e) => setFlags({ ...flags, [flag]: e.target.checked })}
+                      disabled={!canUse && !hasTestedOnce} // ✅ DISABLE IF LIMIT REACHED
                     />
                     <span>{flag}</span>
                   </label>
@@ -211,7 +260,7 @@ function RegexTester({ onClose }) {
                 {copied ? <Check size={18} /> : <Copy size={18} />}
               </button>
             </div>
-            
+
             <div className="flags-info">
               <span className="flag-info">g: global</span>
               <span className="flag-info">i: case-insensitive</span>
@@ -230,6 +279,7 @@ function RegexTester({ onClose }) {
                   className="pattern-btn"
                   onClick={() => loadPattern(key)}
                   title={description}
+                  disabled={!canUse && !hasTestedOnce} // ✅ DISABLE IF LIMIT REACHED
                 >
                   {description}
                 </button>
@@ -239,7 +289,11 @@ function RegexTester({ onClose }) {
 
           {/* Actions */}
           <div className="actions-row">
-            <button className="btn-action secondary" onClick={loadSample}>
+            <button
+              className="btn-action secondary"
+              onClick={loadSample}
+              disabled={!canUse && !hasTestedOnce} // ✅ DISABLE IF LIMIT REACHED
+            >
               <FileText size={16} />
               Load Sample
             </button>
@@ -261,7 +315,7 @@ function RegexTester({ onClose }) {
               <span>Invalid regex: {error}</span>
             </div>
           )}
-          
+
           {!error && pattern && testString && (
             <div className={`status-banner ${matches.length > 0 ? 'success' : 'info'}`}>
               {matches.length > 0 ? (
@@ -287,6 +341,7 @@ function RegexTester({ onClose }) {
                 onChange={(e) => setTestString(e.target.value)}
                 placeholder="Enter text to test your regex against..."
                 spellCheck={false}
+                disabled={!canUse && !hasTestedOnce} // ✅ DISABLE IF LIMIT REACHED
               />
             </div>
 
@@ -294,15 +349,19 @@ function RegexTester({ onClose }) {
               <div className="test-pane">
                 <h3>Highlighted Results</h3>
                 <div className="highlighted-text">
-                  {getHighlightedText().map((part, i) => (
-                    part.isMatch ? (
-                      <span key={i} className="match" title={`Match ${part.index + 1}`}>
-                        {part.text}
-                      </span>
-                    ) : (
-                      <span key={i}>{part.text}</span>
-                    )
-                  ))}
+                  {Array.isArray(getHighlightedText()) ? (
+                    getHighlightedText().map((part, i) => (
+                      part.isMatch ? (
+                        <span key={i} className="match" title={`Match ${part.index + 1}`}>
+                          {part.text}
+                        </span>
+                      ) : (
+                        <span key={i}>{part.text}</span>
+                      )
+                    ))
+                  ) : (
+                    <span>{getHighlightedText()}</span>
+                  )}
                 </div>
               </div>
             )}

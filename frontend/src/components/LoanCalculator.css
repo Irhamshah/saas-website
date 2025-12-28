@@ -1,550 +1,113 @@
-.interest-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(10, 14, 39, 0.98);
-  backdrop-filter: blur(20px);
+/* ADD TO LoanCalculator.css */
+
+/* Calculate Section */
+.calculate-section {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10000;
-  padding: 1rem;
-  overflow-y: auto;
-  animation: fadeIn 0.3s ease;
+  gap: 1rem;
+  margin: 2rem 0;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.interest-container {
-  background: linear-gradient(135deg, #1a1f3a 0%, #0f1729 100%);
-  border: 1px solid rgba(45, 91, 255, 0.2);
-  border-radius: 24px;
-  max-width: 1000px;
-  width: 100%;
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5),
-              0 0 100px rgba(45, 91, 255, 0.1);
-  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px) scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.interest-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 200px;
-  background: radial-gradient(ellipse at top, rgba(45, 91, 255, 0.15), transparent);
-  pointer-events: none;
-  z-index: 0;
-}
-
-.interest-header {
-  position: relative;
-  padding: 2rem 2.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  z-index: 1;
-}
-
-.interest-header h2 {
-  font-family: 'Fraunces', serif;
-  font-size: 2rem;
-  margin: 0 0 0.75rem 0;
-  padding-right: 3rem;
-  color: #fff;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.8) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.interest-header p {
-  color: rgba(255, 255, 255, 0.6);
-  margin: 0;
-  font-size: 1rem;
-  line-height: 1.5;
-  padding-right: 3rem;
-}
-
-.close-btn {
-  position: absolute;
-  top: 2rem;
-  right: 2.5rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.7);
+.btn-calculate {
+  flex: 1;
+  padding: 1.25rem 2.5rem;
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 1.125rem;
   cursor: pointer;
-  padding: 0.625rem;
-  border-radius: 12px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2;
+  gap: 0.75rem;
+  border: none;
+  background: linear-gradient(135deg, #2D5BFF 0%, #1E40AF 100%);
+  color: white;
+  box-shadow: 0 4px 14px rgba(45, 91, 255, 0.4);
+  position: relative;
+  overflow: hidden;
 }
 
-.close-btn:hover {
-  background: rgba(239, 68, 68, 0.15);
-  border-color: rgba(239, 68, 68, 0.3);
-  color: #EF4444;
-  transform: rotate(90deg);
+.btn-calculate::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #FF6B35 0%, #F59E0B 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
-.interest-content {
-  padding: 2rem 2.5rem 2.5rem;
-  overflow-y: auto;
-  flex: 1;
+.btn-calculate:hover:not(:disabled)::before {
+  opacity: 1;
+}
+
+.btn-calculate:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(45, 91, 255, 0.5);
+}
+
+.btn-calculate > * {
   position: relative;
   z-index: 1;
 }
 
-.interest-content::-webkit-scrollbar {
-  width: 8px;
+.btn-calculate:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
-.interest-content::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 10px;
-}
-
-.interest-content::-webkit-scrollbar-thumb {
-  background: rgba(45, 91, 255, 0.3);
-  border-radius: 10px;
-}
-
-/* Mode Section */
-.mode-section {
-  margin-bottom: 1.5rem;
-}
-
-.mode-tabs {
-  display: flex;
-  gap: 0.5rem;
-  background: rgba(255, 255, 255, 0.03);
-  padding: 0.5rem;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.mode-tab {
-  flex: 1;
+.btn-clear {
+  padding: 1.25rem 2rem;
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.875rem 1rem;
-  background: transparent;
-  border: none;
-  border-radius: 8px;
-  color: rgba(255, 255, 255, 0.6);
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 0.9rem;
-}
-
-.mode-tab:hover {
-  color: rgba(255, 255, 255, 0.8);
+  gap: 0.625rem;
   background: rgba(255, 255, 255, 0.05);
-}
-
-.mode-tab.active {
-  background: linear-gradient(135deg, rgba(45, 91, 255, 0.2) 0%, rgba(30, 64, 175, 0.2) 100%);
-  color: #2D5BFF;
-  border: 1px solid rgba(45, 91, 255, 0.3);
-}
-
-/* Inputs */
-.inputs-section {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 1.5rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 16px;
-  padding: 1.5rem;
-}
-
-.input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.input-group label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.9rem;
-}
-
-.input-with-currency,
-.input-with-suffix,
-.input-with-select {
-  position: relative;
-  display: flex;
-  align-items: center;
-  background: rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.currency-symbol {
-  padding: 0 0 0 1rem;
-  color: rgba(255, 255, 255, 0.5);
-  font-weight: 600;
-}
-
-.suffix {
-  padding: 0 1rem 0 0;
-  color: rgba(255, 255, 255, 0.5);
-  font-weight: 600;
-}
-
-.input-group input[type="number"] {
-  flex: 1;
-  padding: 0.875rem;
-  background: transparent;
-  border: none;
   color: #fff;
-  font-size: 1rem;
-  font-weight: 600;
-  outline: none;
 }
 
-.input-group select {
-  padding: 0.875rem;
-  background: rgba(45, 91, 255, 0.1);
-  border: none;
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
-  color: #2D5BFF;
-  font-weight: 600;
-  cursor: pointer;
-  outline: none;
-}
-
-.input-with-select input {
-  padding-right: 0;
-}
-
-/* Actions */
-.actions-row {
-  display: flex;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.btn-action {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
-  border: none;
-  border-radius: 10px;
-  font-weight: 600;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.btn-action.secondary {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.btn-action.secondary:hover {
+.btn-clear:hover {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.2);
   transform: translateY(-2px);
 }
 
-/* Results */
-.results-section,
-.breakdown-section {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 16px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
+.btn-clear:active {
+  transform: translateY(0);
 }
 
-.results-section h3,
-.breakdown-section h3 {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #fff;
-  margin: 0 0 1.25rem 0;
+/* Disabled preset buttons */
+.preset-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none !important;
 }
 
-.results-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+/* Disabled inputs */
+.input-with-currency input:disabled,
+.input-with-suffix input:disabled,
+.input-with-select input:disabled,
+.input-with-select select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.02);
 }
 
-.result-card {
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
-  padding: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.625rem;
-}
-
-.result-card.primary {
-  background: linear-gradient(135deg, rgba(45, 91, 255, 0.15), rgba(30, 64, 175, 0.15));
-  border-color: rgba(45, 91, 255, 0.3);
-}
-
-.result-card.success {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.15));
-  border-color: rgba(16, 185, 129, 0.3);
-}
-
-.result-label {
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.6);
-  font-weight: 500;
-}
-
-.result-value {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #fff;
-}
-
-.result-card.primary .result-value {
-  color: #2D5BFF;
-}
-
-.result-card.success .result-value {
-  color: #10B981;
-}
-
-/* Visual Breakdown */
-.visual-breakdown {
-  margin-top: 1.5rem;
-}
-
-.breakdown-bars {
-  display: flex;
-  height: 60px;
-  border-radius: 10px;
-  overflow: hidden;
-  margin-bottom: 1rem;
-}
-
-.bar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  font-size: 0.85rem;
-  color: white;
-  transition: all 0.3s ease;
-}
-
-.bar.principal {
-  background: #2D5BFF;
-}
-
-.bar.contributions {
-  background: #3B82F6;
-}
-
-.bar.interest {
-  background: #10B981;
-}
-
-.breakdown-legend {
-  display: flex;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.legend-color {
-  width: 16px;
-  height: 16px;
-  border-radius: 4px;
-}
-
-.legend-color.principal {
-  background: #2D5BFF;
-}
-
-.legend-color.contributions {
-  background: #3B82F6;
-}
-
-.legend-color.interest {
-  background: #10B981;
-}
-
-/* Table */
-.breakdown-table {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.table-header,
-.table-row {
-  display: grid;
-  grid-template-columns: 60px repeat(auto-fit, minmax(100px, 1fr));
-  gap: 1rem;
-  padding: 0.875rem 1rem;
-  border-radius: 8px;
-}
-
-.table-header {
-  background: rgba(45, 91, 255, 0.1);
-  border: 1px solid rgba(45, 91, 255, 0.2);
-  font-weight: 600;
-  font-size: 0.85rem;
-  color: #2D5BFF;
-}
-
-.table-row {
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.table-row .amount {
-  font-weight: 600;
-}
-
-.table-row .interest {
-  color: #10B981;
-}
-
-/* Info */
-.info-section {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 16px;
-  padding: 1.5rem;
-}
-
-.info-section h3 {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #fff;
-  margin: 0 0 1.25rem 0;
-}
-
-.info-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
-}
-
-.info-card {
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
-  padding: 1.25rem;
-}
-
-.info-card h4 {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #2D5BFF;
-  margin: 0 0 0.75rem 0;
-}
-
-.formula {
-  font-family: 'Monaco', 'Courier New', monospace;
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.8);
-  background: rgba(0, 0, 0, 0.3);
-  padding: 0.5rem 0.75rem;
-  border-radius: 6px;
-  margin-bottom: 0.75rem;
-}
-
-.info-card p {
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.7);
-  margin: 0;
-  line-height: 1.6;
-}
-
-/* Responsive */
+/* Mobile */
 @media (max-width: 768px) {
-  .interest-modal {
-    padding: 0;
+  .calculate-section {
+    flex-direction: column;
   }
 
-  .interest-container {
-    max-height: 100vh;
-    border-radius: 0;
-    height: 100%;
-  }
-
-  .interest-header {
-    padding: 1.5rem;
-  }
-
-  .interest-header h2 {
-    font-size: 1.5rem;
-  }
-
-  .interest-content {
-    padding: 1.5rem;
-  }
-
-  .inputs-section {
-    grid-template-columns: 1fr;
-  }
-
-  .results-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .table-header,
-  .table-row {
-    grid-template-columns: 50px 1fr 1fr 1fr;
-    font-size: 0.8rem;
-    padding: 0.75rem 0.5rem;
+  .btn-calculate,
+  .btn-clear {
+    width: 100%;
   }
 }

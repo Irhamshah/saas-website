@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { X, Copy, Check, Upload, Download, ArrowLeftRight, FileText, Image as ImageIcon } from 'lucide-react';
 import toast from 'react-hot-toast';
 import './Base64Tool.css';
+import { useUsageLimit } from '../hooks/useUsageLimit';
+import UsageIndicator from './UsageIndicator';
 
 function Base64Tool({ onClose }) {
   const [mode, setMode] = useState('encode'); // 'encode' or 'decode'
@@ -12,6 +14,16 @@ function Base64Tool({ onClose }) {
   const [file, setFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
   const fileInputRef = React.useRef(null);
+
+  const {
+    usageCount,
+    usageRemaining,
+    usagePercentage,
+    canUse,
+    isPremium,
+    incrementUsage,
+    showLimitError,
+  } = useUsageLimit('base64', 3);
 
   // Encode to Base64
   const encodeToBase64 = (text) => {
@@ -69,7 +81,7 @@ function Base64Tool({ onClose }) {
     const uploadedFile = e.target.files[0];
     if (uploadedFile) {
       const reader = new FileReader();
-      
+
       if (inputType === 'image' && uploadedFile.type.startsWith('image/')) {
         reader.onload = (e) => {
           const base64 = e.target.result;
@@ -187,6 +199,13 @@ function Base64Tool({ onClose }) {
         </div>
 
         <div className="base64-content">
+          {/* ✅ ADD USAGE INDICATOR */}
+          <UsageIndicator
+            usageCount={usageCount}
+            usageRemaining={usageRemaining}
+            usagePercentage={usagePercentage}
+            isPremium={isPremium}
+          />
           {/* Mode Selection */}
           <div className="mode-section">
             <div className="mode-tabs">

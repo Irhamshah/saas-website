@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { X, Copy, Check, RefreshCw, Shield, AlertTriangle, CheckCircle, Download } from 'lucide-react';
 import toast from 'react-hot-toast';
 import './PasswordGenerator.css';
+import { useUsageLimit } from '../hooks/useUsageLimit';
+import UsageIndicator from './UsageIndicator';
 
 function PasswordGenerator({ onClose }) {
   const [password, setPassword] = useState('');
@@ -16,6 +18,17 @@ function PasswordGenerator({ onClose }) {
     numbers: true,
     symbols: true,
   });
+
+  // Usage Limits
+  const {
+    usageCount,
+    usageRemaining,
+    usagePercentage,
+    canUse,
+    isPremium,
+    incrementUsage,
+    showLimitError,
+  } = useUsageLimit('password', 3);
 
   // Advanced options
   const [advanced, setAdvanced] = useState({
@@ -52,7 +65,8 @@ function PasswordGenerator({ onClose }) {
   const sequentialChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
   // Generate password
-  const generatePassword = () => {
+  const generatePassword = async () => {
+
     if (!options.uppercase && !options.lowercase && !options.numbers && !options.symbols && !advanced.customCharset) {
       toast.error('Please select at least one character type');
       return '';
@@ -188,9 +202,14 @@ function PasswordGenerator({ onClose }) {
   };
 
   // Handle generate
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
+    if (!canUse) {
+      showLimitError();
+      return;
+    }
+
     if (quantity === 1) {
-      const newPassword = generatePassword();
+      const newPassword = await generatePassword();
       if (newPassword) {
         setPassword(newPassword);
         setStrength(calculateStrength(newPassword));
@@ -211,6 +230,7 @@ function PasswordGenerator({ onClose }) {
       setPasswords(newPasswords);
       setPassword('');
       if (newPasswords.length > 0) {
+        await incrementUsage();
         toast.success(`Generated ${newPasswords.length} passwords!`);
       }
     }
@@ -280,6 +300,12 @@ function PasswordGenerator({ onClose }) {
         </div>
 
         <div className="password-content">
+          <UsageIndicator
+            usageCount={usageCount}
+            usageLimit={3}
+            usageRemaining={usageRemaining}
+            usagePercentage={usagePercentage}
+          />
           {/* Password Display */}
           {password && (
             <div className="password-display">

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { X, Copy, Check, Type, AlignLeft, List, ArrowUpDown, FileText, Zap } from 'lucide-react';
 import toast from 'react-hot-toast';
 import './TextTools.css';
+import { useUsageLimit } from '../hooks/useUsageLimit';
+import UsageIndicator from './UsageIndicator';
 
 function TextTools({ onClose, initialTool = 'word-counter' }) {
   const [currentTool, setCurrentTool] = useState(initialTool);
@@ -33,22 +35,45 @@ function TextTools({ onClose, initialTool = 'word-counter' }) {
   const [text2, setText2] = useState('');
   const [diffResult, setDiffResult] = useState([]);
 
+  // ✅ SEPARATE USAGE LIMIT FOR EACH TOOL
+  const wordCounterLimit = useUsageLimit('word-counter', 3);
+  const caseConverterLimit = useUsageLimit('case-converter', 3);
+  const duplicateRemoverLimit = useUsageLimit('duplicate-remover', 3);
+  const sortLinesLimit = useUsageLimit('sort-lines', 3);
+  const loremIpsumLimit = useUsageLimit('lorem-ipsum', 3);
+  const textDiffLimit = useUsageLimit('text-diff', 3);
+
+  // ✅ Get current tool's limit data
+  const getCurrentLimit = () => {
+    switch (currentTool) {
+      case 'word-counter': return wordCounterLimit;
+      case 'case-converter': return caseConverterLimit;
+      case 'duplicate-remover': return duplicateRemoverLimit;
+      case 'sort-lines': return sortLinesLimit;
+      case 'lorem-ipsum': return loremIpsumLimit;
+      case 'text-diff': return textDiffLimit;
+      default: return wordCounterLimit;
+    }
+  };
+
+  const currentLimit = getCurrentLimit();
+
   // Calculate word counter stats
   useEffect(() => {
     if (currentTool === 'word-counter') {
       const text = inputText;
-      
+
       const characters = text.length;
       const charactersNoSpaces = text.replace(/\s/g, '').length;
-      
+
       const words = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
-      
+
       const sentences = text.trim() === '' ? 0 : text.split(/[.!?]+/).filter(s => s.trim().length > 0).length;
-      
+
       const paragraphs = text.trim() === '' ? 0 : text.split(/\n\s*\n/).filter(p => p.trim().length > 0).length;
-      
+
       const lines = text === '' ? 0 : text.split('\n').length;
-      
+
       const readingTime = Math.ceil(words / 200); // 200 words per minute
 
       setStats({
@@ -63,10 +88,16 @@ function TextTools({ onClose, initialTool = 'word-counter' }) {
     }
   }, [inputText, currentTool]);
 
-  // Case Converter
-  const convertCase = (type) => {
+  // ✅ Case Converter with limit check
+  const convertCase = async (type) => {
+    // CHECK LIMIT
+    if (!caseConverterLimit.canUse) {
+      caseConverterLimit.showLimitError();
+      return;
+    }
+
     let result = '';
-    
+
     switch (type) {
       case 'lower':
         result = inputText.toLowerCase();
@@ -99,7 +130,7 @@ function TextTools({ onClose, initialTool = 'word-counter' }) {
         result = inputText.trim().toLowerCase().replace(/\s+/g, '-');
         break;
       case 'alternate':
-        result = inputText.split('').map((char, i) => 
+        result = inputText.split('').map((char, i) =>
           i % 2 === 0 ? char.toLowerCase() : char.toUpperCase()
         ).join('');
         break;
@@ -112,37 +143,61 @@ function TextTools({ onClose, initialTool = 'word-counter' }) {
       default:
         result = inputText;
     }
-    
+
     setOutputText(result);
+
+    // INCREMENT USAGE
+    await caseConverterLimit.incrementUsage();
+
     toast.success('Text converted!');
   };
 
-  // Duplicate Line Remover
-  const removeDuplicates = () => {
+  // ✅ Duplicate Line Remover with limit check
+  const removeDuplicates = async () => {
+    // CHECK LIMIT
+    if (!duplicateRemoverLimit.canUse) {
+      duplicateRemoverLimit.showLimitError();
+      return;
+    }
+
     const lines = inputText.split('\n');
     const uniqueLines = [...new Set(lines)];
     const removed = lines.length - uniqueLines.length;
-    
+
     setOutputText(uniqueLines.join('\n'));
+
+    // INCREMENT USAGE
+    await duplicateRemoverLimit.incrementUsage();
+
     toast.success(`Removed ${removed} duplicate line${removed !== 1 ? 's' : ''}!`);
   };
 
-  // Sort Lines
-  const sortLines = (order = 'asc', caseInsensitive = true) => {
+  // ✅ Sort Lines with limit check
+  const sortLines = async (order = 'asc', caseInsensitive = true) => {
+    // CHECK LIMIT
+    if (!sortLinesLimit.canUse) {
+      sortLinesLimit.showLimitError();
+      return;
+    }
+
     const lines = inputText.split('\n');
-    
+
     const sorted = lines.sort((a, b) => {
       const aCompare = caseInsensitive ? a.toLowerCase() : a;
       const bCompare = caseInsensitive ? b.toLowerCase() : b;
-      
+
       if (order === 'asc') {
         return aCompare.localeCompare(bCompare);
       } else {
         return bCompare.localeCompare(aCompare);
       }
     });
-    
+
     setOutputText(sorted.join('\n'));
+
+    // INCREMENT USAGE
+    await sortLinesLimit.incrementUsage();
+
     toast.success(`Lines sorted ${order === 'asc' ? 'A-Z' : 'Z-A'}!`);
   };
 
@@ -176,45 +231,51 @@ function TextTools({ onClose, initialTool = 'word-counter' }) {
     return paragraph.join(' ');
   };
 
-  const generateLorem = () => {
+  // ✅ Generate Lorem with limit check
+  const generateLorem = async () => {
+    // CHECK LIMIT
+    if (!loremIpsumLimit.canUse) {
+      loremIpsumLimit.showLimitError();
+      return;
+    }
+
     let result = '';
-    
+
     switch (loremType) {
       case 'paragraphs':
-        // Distribute words across paragraphs
         const wordsPerParagraph = Math.floor(loremWords / loremCount);
         const paragraphs = [];
-        
+
         for (let i = 0; i < loremCount; i++) {
-          const targetWords = i === loremCount - 1 
-            ? loremWords - (wordsPerParagraph * (loremCount - 1)) // Last paragraph gets remaining words
+          const targetWords = i === loremCount - 1
+            ? loremWords - (wordsPerParagraph * (loremCount - 1))
             : wordsPerParagraph;
-          
+
           let paragraphWords = [];
           let currentWordCount = 0;
-          
+
           while (currentWordCount < targetWords) {
             const sentenceLength = Math.min(
               Math.floor(Math.random() * 10) + 5,
               targetWords - currentWordCount
             );
-            
+
             const words = [];
             for (let j = 0; j < sentenceLength; j++) {
               words.push(loremWordsArray[Math.floor(Math.random() * loremWordsArray.length)]);
             }
-            
+
             const sentence = words.join(' ').charAt(0).toUpperCase() + words.join(' ').slice(1) + '.';
             paragraphWords.push(sentence);
             currentWordCount += sentenceLength;
           }
-          
+
           paragraphs.push(paragraphWords.join(' '));
         }
-        
+
         result = paragraphs.join('\n\n');
         break;
-        
+
       case 'sentences':
         const sentences = [];
         for (let i = 0; i < loremCount; i++) {
@@ -222,7 +283,7 @@ function TextTools({ onClose, initialTool = 'word-counter' }) {
         }
         result = sentences.join(' ');
         break;
-        
+
       case 'words':
         const words = [];
         for (let i = 0; i < loremCount; i++) {
@@ -231,22 +292,26 @@ function TextTools({ onClose, initialTool = 'word-counter' }) {
         result = words.join(' ');
         break;
     }
-    
+
     setOutputText(result);
+
+    // INCREMENT USAGE
+    await loremIpsumLimit.incrementUsage();
+
     toast.success('Lorem ipsum generated!');
   };
 
-  // Text Diff Checker
+  // Text Diff Checker - NO LIMIT (it's just viewing)
   const compareTexts = () => {
     const lines1 = text1.split('\n');
     const lines2 = text2.split('\n');
     const maxLines = Math.max(lines1.length, lines2.length);
-    
+
     const result = [];
     for (let i = 0; i < maxLines; i++) {
       const line1 = lines1[i] || '';
       const line2 = lines2[i] || '';
-      
+
       if (line1 === line2) {
         result.push({ type: 'equal', line1, line2 });
       } else if (!line1) {
@@ -257,7 +322,7 @@ function TextTools({ onClose, initialTool = 'word-counter' }) {
         result.push({ type: 'modified', line1, line2 });
       }
     }
-    
+
     setDiffResult(result);
   };
 
@@ -297,9 +362,10 @@ function TextTools({ onClose, initialTool = 'word-counter' }) {
                 placeholder="Type or paste your text here..."
                 rows={15}
                 autoFocus
+                disabled={!wordCounterLimit.canUse} // ✅ DISABLE IF LIMIT REACHED
               />
             </div>
-            
+
             <div className="stats-section">
               <h3>Statistics</h3>
               <div className="stats-grid">
@@ -328,7 +394,7 @@ function TextTools({ onClose, initialTool = 'word-counter' }) {
                   <div className="stat-label">Lines</div>
                 </div>
               </div>
-              
+
               <div className="reading-time">
                 <Zap size={18} />
                 <span>Estimated reading time: <strong>{stats.readingTime} min</strong></span>
@@ -348,20 +414,21 @@ function TextTools({ onClose, initialTool = 'word-counter' }) {
                 placeholder="Type or paste your text here..."
                 rows={8}
                 autoFocus
+                disabled={!caseConverterLimit.canUse} // ✅ DISABLE IF LIMIT REACHED
               />
             </div>
 
             <div className="case-buttons">
-              <button onClick={() => convertCase('lower')} className="case-btn">lowercase</button>
-              <button onClick={() => convertCase('upper')} className="case-btn">UPPERCASE</button>
-              <button onClick={() => convertCase('title')} className="case-btn">Title Case</button>
-              <button onClick={() => convertCase('sentence')} className="case-btn">Sentence case</button>
-              <button onClick={() => convertCase('camel')} className="case-btn">camelCase</button>
-              <button onClick={() => convertCase('pascal')} className="case-btn">PascalCase</button>
-              <button onClick={() => convertCase('snake')} className="case-btn">snake_case</button>
-              <button onClick={() => convertCase('kebab')} className="case-btn">kebab-case</button>
-              <button onClick={() => convertCase('alternate')} className="case-btn">aLtErNaTe</button>
-              <button onClick={() => convertCase('inverse')} className="case-btn">InVeRsE</button>
+              <button onClick={() => convertCase('lower')} className="case-btn" disabled={!caseConverterLimit.canUse}>lowercase</button>
+              <button onClick={() => convertCase('upper')} className="case-btn" disabled={!caseConverterLimit.canUse}>UPPERCASE</button>
+              <button onClick={() => convertCase('title')} className="case-btn" disabled={!caseConverterLimit.canUse}>Title Case</button>
+              <button onClick={() => convertCase('sentence')} className="case-btn" disabled={!caseConverterLimit.canUse}>Sentence case</button>
+              <button onClick={() => convertCase('camel')} className="case-btn" disabled={!caseConverterLimit.canUse}>camelCase</button>
+              <button onClick={() => convertCase('pascal')} className="case-btn" disabled={!caseConverterLimit.canUse}>PascalCase</button>
+              <button onClick={() => convertCase('snake')} className="case-btn" disabled={!caseConverterLimit.canUse}>snake_case</button>
+              <button onClick={() => convertCase('kebab')} className="case-btn" disabled={!caseConverterLimit.canUse}>kebab-case</button>
+              <button onClick={() => convertCase('alternate')} className="case-btn" disabled={!caseConverterLimit.canUse}>aLtErNaTe</button>
+              <button onClick={() => convertCase('inverse')} className="case-btn" disabled={!caseConverterLimit.canUse}>InVeRsE</button>
             </div>
 
             {outputText && (
@@ -394,8 +461,13 @@ function TextTools({ onClose, initialTool = 'word-counter' }) {
                 placeholder="Line 1&#10;Line 2&#10;Line 1 (duplicate)&#10;Line 3"
                 rows={10}
                 autoFocus
+                disabled={!duplicateRemoverLimit.canUse} // ✅ DISABLE IF LIMIT REACHED
               />
-              <button className="action-btn primary" onClick={removeDuplicates}>
+              <button
+                className="action-btn primary"
+                onClick={removeDuplicates}
+                disabled={!duplicateRemoverLimit.canUse} // ✅ DISABLE IF LIMIT REACHED
+              >
                 <List size={18} />
                 Remove Duplicates
               </button>
@@ -431,13 +503,22 @@ function TextTools({ onClose, initialTool = 'word-counter' }) {
                 placeholder="Zebra&#10;Apple&#10;Banana&#10;Orange"
                 rows={10}
                 autoFocus
+                disabled={!sortLinesLimit.canUse} // ✅ DISABLE IF LIMIT REACHED
               />
               <div className="sort-buttons">
-                <button className="action-btn primary" onClick={() => sortLines('asc', true)}>
+                <button
+                  className="action-btn primary"
+                  onClick={() => sortLines('asc', true)}
+                  disabled={!sortLinesLimit.canUse} // ✅ DISABLE IF LIMIT REACHED
+                >
                   <ArrowUpDown size={18} />
                   Sort A-Z
                 </button>
-                <button className="action-btn secondary" onClick={() => sortLines('desc', true)}>
+                <button
+                  className="action-btn secondary"
+                  onClick={() => sortLines('desc', true)}
+                  disabled={!sortLinesLimit.canUse} // ✅ DISABLE IF LIMIT REACHED
+                >
                   <ArrowUpDown size={18} />
                   Sort Z-A
                 </button>
@@ -470,13 +551,17 @@ function TextTools({ onClose, initialTool = 'word-counter' }) {
               <div className="lorem-options">
                 <div className="option-group">
                   <label>Generate</label>
-                  <select value={loremType} onChange={(e) => setLoremType(e.target.value)}>
+                  <select
+                    value={loremType}
+                    onChange={(e) => setLoremType(e.target.value)}
+                    disabled={!loremIpsumLimit.canUse} // ✅ DISABLE IF LIMIT REACHED
+                  >
                     <option value="paragraphs">Paragraphs</option>
                     <option value="sentences">Sentences</option>
                     <option value="words">Words</option>
                   </select>
                 </div>
-                
+
                 {loremType === 'paragraphs' ? (
                   <>
                     <div className="option-group">
@@ -487,9 +572,10 @@ function TextTools({ onClose, initialTool = 'word-counter' }) {
                         max="50"
                         value={loremCount}
                         onChange={(e) => setLoremCount(parseInt(e.target.value) || 1)}
+                        disabled={!loremIpsumLimit.canUse} // ✅ DISABLE IF LIMIT REACHED
                       />
                     </div>
-                    
+
                     <div className="option-group">
                       <label>Total Words</label>
                       <input
@@ -499,6 +585,7 @@ function TextTools({ onClose, initialTool = 'word-counter' }) {
                         step="10"
                         value={loremWords}
                         onChange={(e) => setLoremWords(parseInt(e.target.value) || 10)}
+                        disabled={!loremIpsumLimit.canUse} // ✅ DISABLE IF LIMIT REACHED
                       />
                     </div>
                   </>
@@ -511,16 +598,21 @@ function TextTools({ onClose, initialTool = 'word-counter' }) {
                       max={loremType === 'words' ? 5000 : 100}
                       value={loremCount}
                       onChange={(e) => setLoremCount(parseInt(e.target.value) || 1)}
+                      disabled={!loremIpsumLimit.canUse} // ✅ DISABLE IF LIMIT REACHED
                     />
                   </div>
                 )}
-                
-                <button className="action-btn primary" onClick={generateLorem}>
+
+                <button
+                  className="action-btn primary"
+                  onClick={generateLorem}
+                  disabled={!loremIpsumLimit.canUse} // ✅ DISABLE IF LIMIT REACHED
+                >
                   <FileText size={18} />
                   Generate
                 </button>
               </div>
-              
+
               {loremType === 'paragraphs' && (
                 <div className="lorem-hint">
                   <span>Will generate {loremWords} words across {loremCount} paragraph{loremCount !== 1 ? 's' : ''} (~{Math.floor(loremWords / loremCount)} words per paragraph)</span>
@@ -558,9 +650,10 @@ function TextTools({ onClose, initialTool = 'word-counter' }) {
                   onChange={(e) => setText1(e.target.value)}
                   placeholder="Enter original text..."
                   rows={12}
+                  disabled={!textDiffLimit.canUse} // ✅ DISABLE IF LIMIT REACHED
                 />
               </div>
-              
+
               <div className="diff-input-section">
                 <label>Modified Text</label>
                 <textarea
@@ -568,6 +661,7 @@ function TextTools({ onClose, initialTool = 'word-counter' }) {
                   onChange={(e) => setText2(e.target.value)}
                   placeholder="Enter modified text..."
                   rows={12}
+                  disabled={!textDiffLimit.canUse} // ✅ DISABLE IF LIMIT REACHED
                 />
               </div>
             </div>
@@ -616,6 +710,9 @@ function TextTools({ onClose, initialTool = 'word-counter' }) {
         </div>
 
         <div className="text-tools-content">
+          {/* ✅ USAGE INDICATOR (shows current tool's usage) */}
+
+
           <div className="tools-sidebar">
             <button
               className={`tool-tab ${currentTool === 'word-counter' ? 'active' : ''}`}
@@ -662,6 +759,12 @@ function TextTools({ onClose, initialTool = 'word-counter' }) {
           </div>
 
           <div className="tool-main">
+            <UsageIndicator
+              usageCount={currentLimit.usageCount}
+              usageRemaining={currentLimit.usageRemaining}
+              usagePercentage={currentLimit.usagePercentage}
+              isPremium={currentLimit.isPremium}
+            />
             {renderToolContent()}
           </div>
         </div>

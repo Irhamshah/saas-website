@@ -3,6 +3,8 @@ import { X, Upload, Trash2, Image as ImageIcon, Download, ArrowDown, AlertCircle
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import './ImageCompressor.css';
+import { useUsageLimit } from '../hooks/useUsageLimit';
+import UsageIndicator from './UsageIndicator';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -16,6 +18,16 @@ function ImageCompressor({ onClose }) {
     const files = Array.from(e.target.files);
     addFiles(files);
   };
+
+  const {
+    usageCount,
+    usageRemaining,
+    usagePercentage,
+    canUse,
+    isPremium,
+    incrementUsage,
+    showLimitError,
+  } = useUsageLimit('image-compressor', 3);
 
   const handleDrop = (e) => {
     e.preventDefault();
@@ -136,6 +148,12 @@ function ImageCompressor({ onClose }) {
   };
 
   const compressAllImages = async () => {
+    // ✅ CHECK LIMIT FIRST
+    if (!canUse) {
+      showLimitError();
+      return;
+    }
+
     if (imageFiles.length === 0) {
       toast.error('Please add images to compress');
       return;
@@ -167,6 +185,8 @@ function ImageCompressor({ onClose }) {
           } : f
         ));
       }
+
+      await incrementUsage();
 
       toast.success('All images compressed successfully! 🎉');
 
@@ -241,6 +261,12 @@ function ImageCompressor({ onClose }) {
         </div>
 
         <div className="compressor-content">
+          <UsageIndicator
+            usageCount={usageCount}
+            usageRemaining={usageRemaining}
+            usagePercentage={usagePercentage}
+            isPremium={isPremium}
+          />
           {/* Backend Status */}
           {!backendAvailable && (
             <div className="error-banner">

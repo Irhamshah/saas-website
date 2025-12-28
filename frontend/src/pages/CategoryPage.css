@@ -1,7 +1,8 @@
+/* Category Page - Narrower for Side Ads */
 .category-page {
   min-height: calc(100vh - 80px - 80px);
   padding: 3rem 2rem;
-  max-width: 1400px;
+  max-width: 1000px; /* ✅ REDUCED from 1400px */
   margin: 0 auto;
 }
 
@@ -16,8 +17,8 @@
 }
 
 .page-icon {
-  width: 80px;
-  height: 80px;
+  width: 70px; /* ✅ REDUCED from 80px */
+  height: 70px;
   background: linear-gradient(135deg, rgba(45, 91, 255, 0.2), rgba(30, 64, 175, 0.2));
   border: 1px solid rgba(45, 91, 255, 0.3);
   border-radius: 20px;
@@ -34,7 +35,7 @@
 
 .page-title {
   font-family: 'Fraunces', serif;
-  font-size: 2.5rem;
+  font-size: 2.25rem; /* ✅ REDUCED from 2.5rem */
   font-weight: 700;
   color: #fff;
   margin: 0 0 0.75rem 0;
@@ -42,7 +43,7 @@
 }
 
 .page-description {
-  font-size: 1.1rem;
+  font-size: 1rem; /* ✅ REDUCED from 1.1rem */
   color: rgba(255, 255, 255, 0.6);
   margin: 0;
   line-height: 1.6;
@@ -51,11 +52,62 @@
 /* Tools Grid */
 .tools-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* ✅ REDUCED from 350px */
+  gap: 1.25rem; /* ✅ REDUCED from 1.5rem */
 }
 
-/* Responsive */
+/* ============================================
+   BANNER AD CONTAINERS (Add these if needed)
+   ============================================ */
+
+/* Wrapper for page + ads */
+.page-with-ads {
+  display: flex;
+  gap: 2rem;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Left sidebar ad */
+.ad-sidebar-left {
+  width: 160px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 100px;
+  height: fit-content;
+}
+
+/* Right sidebar ad */
+.ad-sidebar-right {
+  width: 160px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 100px;
+  height: fit-content;
+}
+
+/* Main content area */
+.page-content {
+  flex: 1;
+  min-width: 0; /* Prevents flex overflow */
+}
+
+/* Ad placeholder styling */
+.ad-banner {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  min-height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.875rem;
+  text-align: center;
+  padding: 1rem;
+}
+
 @media (max-width: 768px) {
   .category-page {
     padding: 2rem 1.5rem;
@@ -68,14 +120,32 @@
   }
   
   .page-title {
-    font-size: 2rem;
+    font-size: 1.75rem; /* ✅ REDUCED from 2rem */
   }
   
   .page-description {
-    font-size: 1rem;
+    font-size: 0.95rem;
   }
   
   .tools-grid {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 }
+
+/* ============================================
+   SIZE COMPARISON
+   ============================================ */
+
+/* 
+BEFORE → AFTER
+
+max-width: 1400px → 1000px
+page-icon: 80px → 70px
+page-title: 2.5rem → 2.25rem
+page-description: 1.1rem → 1rem
+tools-grid minmax: 350px → 280px
+gap: 1.5rem → 1.25rem
+
+This gives you ~400px total for side ads (200px each side)
+*/

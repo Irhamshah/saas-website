@@ -3,11 +3,24 @@ import { X, Upload, Trash2, FileText, Download, AlertCircle, ArrowUp, ArrowDown 
 import { PDFDocument } from 'pdf-lib';
 import toast from 'react-hot-toast';
 import './PDFMerge.css';
+import { useUsageLimit } from '../hooks/useUsageLimit';
+import UsageIndicator from './UsageIndicator';
 
 function PDFMerge({ onClose }) {
   const [pdfFiles, setPdfFiles] = useState([]);
   const [merging, setMerging] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState(null);
+
+  // Usage limit hook
+  const {
+    usageCount,
+    usageRemaining,
+    usagePercentage,
+    canUse,
+    isPremium,
+    incrementUsage,
+    showLimitError,
+  } = useUsageLimit('pdf-merge', 3);
 
   const handleFileSelect = (e) => {
     const files = Array.from(e.target.files);
@@ -19,18 +32,18 @@ function PDFMerge({ onClose }) {
     const files = Array.from(e.dataTransfer.files).filter(
       file => file.type === 'application/pdf'
     );
-    
+
     if (files.length === 0) {
       toast.error('Please drop PDF files only');
       return;
     }
-    
+
     addFiles(files);
   };
 
   const addFiles = (files) => {
     const validFiles = files.filter(file => file.type === 'application/pdf');
-    
+
     if (validFiles.length !== files.length) {
       toast.error('Some files were not PDFs and were skipped');
     }
@@ -68,9 +81,9 @@ function PDFMerge({ onClose }) {
   const moveFile = (index, direction) => {
     const newFiles = [...pdfFiles];
     const newIndex = direction === 'up' ? index - 1 : index + 1;
-    
+
     if (newIndex < 0 || newIndex >= newFiles.length) return;
-    
+
     [newFiles[index], newFiles[newIndex]] = [newFiles[newIndex], newFiles[index]];
     setPdfFiles(newFiles);
   };
@@ -81,15 +94,15 @@ function PDFMerge({ onClose }) {
 
   const handleDragOver = (e, index) => {
     e.preventDefault();
-    
+
     if (draggedIndex === null || draggedIndex === index) return;
-    
+
     const newFiles = [...pdfFiles];
     const draggedFile = newFiles[draggedIndex];
-    
+
     newFiles.splice(draggedIndex, 1);
     newFiles.splice(index, 0, draggedFile);
-    
+
     setPdfFiles(newFiles);
     setDraggedIndex(index);
   };
@@ -99,6 +112,11 @@ function PDFMerge({ onClose }) {
   };
 
   const mergePDFs = async () => {
+    if (!canUse) {
+      showLimitError();
+      return;
+    }
+
     if (pdfFiles.length < 2) {
       toast.error('Please add at least 2 PDF files to merge');
       return;
@@ -113,16 +131,16 @@ function PDFMerge({ onClose }) {
       // Process each PDF file
       for (let i = 0; i < pdfFiles.length; i++) {
         const fileData = pdfFiles[i];
-        
+
         // Update status
-        setPdfFiles(prev => prev.map((f, idx) => 
+        setPdfFiles(prev => prev.map((f, idx) =>
           idx === i ? { ...f, status: 'processing' } : f
         ));
 
         // Read the file
         const arrayBuffer = await fileData.file.arrayBuffer();
         const pdf = await PDFDocument.load(arrayBuffer);
-        
+
         // Copy all pages from this PDF
         const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
         copiedPages.forEach((page) => {
@@ -130,7 +148,7 @@ function PDFMerge({ onClose }) {
         });
 
         // Update status
-        setPdfFiles(prev => prev.map((f, idx) => 
+        setPdfFiles(prev => prev.map((f, idx) =>
           idx === i ? { ...f, status: 'completed' } : f
         ));
       }
@@ -149,8 +167,11 @@ function PDFMerge({ onClose }) {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
+      // ✅ INCREMENT USAGE AFTER SUCCESS
+      await incrementUsage();;
+
       toast.success('PDFs merged successfully! 🎉');
-      
+
       // Reset after 2 seconds
       setTimeout(() => {
         setPdfFiles([]);
@@ -159,7 +180,7 @@ function PDFMerge({ onClose }) {
     } catch (error) {
       console.error('Error merging PDFs:', error);
       toast.error('Failed to merge PDFs. Please try again.');
-      
+
       // Reset status
       setPdfFiles(prev => prev.map(f => ({ ...f, status: 'ready' })));
     } finally {
@@ -187,6 +208,12 @@ function PDFMerge({ onClose }) {
       </div>
 
       <div className="pdf-merge-content">
+        <UsageIndicator
+          usageCount={usageCount}
+          usageRemaining={usageRemaining}
+          usagePercentage={usagePercentage}
+          isPremium={isPremium}
+        />
         {/* Upload Area */}
         <div
           className="upload-area"
@@ -230,7 +257,7 @@ function PDFMerge({ onClose }) {
                   <div className="file-icon">
                     <FileText size={24} />
                   </div>
-                  
+
                   <div className="file-info">
                     <div className="file-name">{file.name}</div>
                     <div className="file-meta">

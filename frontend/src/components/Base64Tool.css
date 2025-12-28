@@ -460,6 +460,50 @@
   line-height: 1.6;
 }
 
+/* ADD TO Base64Tool.css */
+
+/* Disabled file upload zone */
+.file-upload-zone.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.file-upload-zone.disabled:hover {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+  transform: none;
+  box-shadow: none;
+}
+
+/* Disabled mode tabs */
+.mode-tab:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Disabled type tabs */
+.type-tab:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Disabled textarea */
+textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* Disabled action buttons */
+.btn-action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
 /* Responsive */
 @media (max-width: 1200px) {
   .input-output-section {

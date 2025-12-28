@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { X, Copy, Check, AlertCircle, CheckCircle, Key, Lock, Shield } from 'lucide-react';
 import toast from 'react-hot-toast';
 import './JWTDecoder.css';
+import { useUsageLimit } from '../hooks/useUsageLimit';
+import UsageIndicator from './UsageIndicator';
 
 function JWTDecoder({ onClose }) {
   const [token, setToken] = useState('');
@@ -12,10 +14,33 @@ function JWTDecoder({ onClose }) {
   const [isValid, setIsValid] = useState(null);
   const [copiedSection, setCopiedSection] = useState('');
   const [stats, setStats] = useState(null);
+  const [hasDecodedOnce, setHasDecodedOnce] = useState(false); // ✅ Track if decoded
 
-  // Decode JWT
+  // ✅ Usage limit hook
+  const {
+    usageCount,
+    usageRemaining,
+    usagePercentage,
+    canUse,
+    isPremium,
+    incrementUsage,
+    showLimitError,
+  } = useUsageLimit('jwt-decoder', 3);
+
+  // ✅ Decode JWT with usage tracking
   useEffect(() => {
     if (!token.trim()) {
+      setHeader(null);
+      setPayload(null);
+      setSignature('');
+      setError('');
+      setIsValid(null);
+      setStats(null);
+      return;
+    }
+
+    // ✅ CHECK LIMIT BEFORE DECODING
+    if (!canUse && !hasDecodedOnce) {
       setHeader(null);
       setPayload(null);
       setSignature('');
@@ -64,6 +89,12 @@ function JWTDecoder({ onClose }) {
 
       setIsValid(true);
       setError('');
+
+      // ✅ INCREMENT USAGE ON FIRST DECODE
+      if (!hasDecodedOnce && canUse) {
+        incrementUsage();
+        setHasDecodedOnce(true);
+      }
     } catch (err) {
       setError(err.message);
       setHeader(null);
@@ -87,14 +118,19 @@ function JWTDecoder({ onClose }) {
     setTimeout(() => setCopiedSection(''), 2000);
   };
 
-  // Load sample JWT
+  // ✅ Load sample with limit check
   const loadSample = () => {
+    if (!canUse && !hasDecodedOnce) {
+      showLimitError();
+      return;
+    }
+
     const sampleToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE5OTk5OTk5OTksImVtYWlsIjoiam9obkBleGFtcGxlLmNvbSIsInJvbGUiOiJhZG1pbiJ9.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
     setToken(sampleToken);
     toast.success('Sample JWT loaded!');
   };
 
-  // Clear all
+  // ✅ Clear all and reset usage flag
   const handleClear = () => {
     setToken('');
     setHeader(null);
@@ -103,6 +139,7 @@ function JWTDecoder({ onClose }) {
     setError('');
     setIsValid(null);
     setStats(null);
+    setHasDecodedOnce(false); // ✅ Reset for new decode
     toast.success('Cleared!');
   };
 
@@ -132,6 +169,14 @@ function JWTDecoder({ onClose }) {
         </div>
 
         <div className="jwt-content">
+          {/* ✅ ADD USAGE INDICATOR */}
+          <UsageIndicator
+            usageCount={usageCount}
+            usageRemaining={usageRemaining}
+            usagePercentage={usagePercentage}
+            isPremium={isPremium}
+          />
+
           {/* Token Input */}
           <div className="token-section">
             <label>JWT Token</label>
@@ -141,10 +186,15 @@ function JWTDecoder({ onClose }) {
                 onChange={(e) => setToken(e.target.value)}
                 placeholder="Paste your JWT token here..."
                 spellCheck={false}
+                disabled={!canUse && !hasDecodedOnce} // ✅ DISABLE IF LIMIT REACHED
               />
             </div>
             <div className="token-actions">
-              <button className="btn-action secondary" onClick={loadSample}>
+              <button 
+                className="btn-action secondary" 
+                onClick={loadSample}
+                disabled={!canUse && !hasDecodedOnce} // ✅ DISABLE IF LIMIT REACHED
+              >
                 <Key size={16} />
                 Load Sample
               </button>

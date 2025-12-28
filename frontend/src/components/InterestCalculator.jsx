@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { X, TrendingUp, DollarSign, Percent, Calendar, PieChart, Download, RefreshCw } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, TrendingUp, DollarSign, Percent, Calendar, PieChart, Download, RefreshCw, Calculator } from 'lucide-react';
 import toast from 'react-hot-toast';
 import './InterestCalculator.css';
+import { useUsageLimit } from '../hooks/useUsageLimit';
+import UsageIndicator from './UsageIndicator';
 
 function InterestCalculator({ onClose }) {
   const [mode, setMode] = useState('simple'); // 'simple', 'compound', 'investment'
@@ -22,6 +24,17 @@ function InterestCalculator({ onClose }) {
   // Results
   const [results, setResults] = useState(null);
   const [breakdown, setBreakdown] = useState([]);
+
+  // ✅ Usage limit hook
+  const {
+    usageCount,
+    usageRemaining,
+    usagePercentage,
+    canUse,
+    isPremium,
+    incrementUsage,
+    showLimitError,
+  } = useUsageLimit('interest-calculator', 3);
 
   // Calculate Simple Interest
   const calculateSimple = () => {
@@ -150,8 +163,29 @@ function InterestCalculator({ onClose }) {
     };
   };
 
-  // Calculate on change
-  useEffect(() => {
+  // ✅ Calculate on button click
+  const handleCalculate = async () => {
+    // ✅ CHECK LIMIT FIRST
+    if (!canUse) {
+      showLimitError();
+      return;
+    }
+
+    if (principal <= 0) {
+      toast.error('Principal must be greater than 0');
+      return;
+    }
+
+    if (rate <= 0) {
+      toast.error('Interest rate must be greater than 0');
+      return;
+    }
+
+    if (time <= 0) {
+      toast.error('Time period must be greater than 0');
+      return;
+    }
+
     let result;
     if (mode === 'simple') {
       result = calculateSimple();
@@ -160,9 +194,15 @@ function InterestCalculator({ onClose }) {
     } else {
       result = calculateInvestment();
     }
+    
     setResults(result);
     setBreakdown(result.breakdown || []);
-  }, [mode, principal, rate, time, timeUnit, frequency, contribution, contributionFrequency]);
+
+    // ✅ INCREMENT USAGE AFTER SUCCESS
+    await incrementUsage();
+    
+    toast.success('Calculated successfully!');
+  };
 
   // Download report
   const downloadReport = () => {
@@ -232,6 +272,13 @@ function InterestCalculator({ onClose }) {
     toast.success('Reset to defaults');
   };
 
+  // ✅ Clear results
+  const handleClear = () => {
+    setResults(null);
+    setBreakdown([]);
+    toast.success('Results cleared');
+  };
+
   // Format currency
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {
@@ -253,12 +300,21 @@ function InterestCalculator({ onClose }) {
         </div>
 
         <div className="interest-content">
+          {/* ✅ USAGE INDICATOR */}
+          <UsageIndicator
+            usageCount={usageCount}
+            usageRemaining={usageRemaining}
+            usagePercentage={usagePercentage}
+            isPremium={isPremium}
+          />
+
           {/* Mode Selection */}
           <div className="mode-section">
             <div className="mode-tabs">
               <button
                 className={`mode-tab ${mode === 'simple' ? 'active' : ''}`}
                 onClick={() => setMode('simple')}
+                disabled={!canUse} // ✅ DISABLE IF LIMIT REACHED
               >
                 <DollarSign size={18} />
                 Simple Interest
@@ -266,6 +322,7 @@ function InterestCalculator({ onClose }) {
               <button
                 className={`mode-tab ${mode === 'compound' ? 'active' : ''}`}
                 onClick={() => setMode('compound')}
+                disabled={!canUse} // ✅ DISABLE IF LIMIT REACHED
               >
                 <TrendingUp size={18} />
                 Compound Interest
@@ -273,6 +330,7 @@ function InterestCalculator({ onClose }) {
               <button
                 className={`mode-tab ${mode === 'investment' ? 'active' : ''}`}
                 onClick={() => setMode('investment')}
+                disabled={!canUse} // ✅ DISABLE IF LIMIT REACHED
               >
                 <PieChart size={18} />
                 Investment
@@ -295,6 +353,7 @@ function InterestCalculator({ onClose }) {
                   onChange={(e) => setPrincipal(Number(e.target.value))}
                   min="0"
                   step="100"
+                  disabled={!canUse} // ✅ DISABLE IF LIMIT REACHED
                 />
               </div>
             </div>
@@ -312,6 +371,7 @@ function InterestCalculator({ onClose }) {
                   min="0"
                   max="100"
                   step="0.1"
+                  disabled={!canUse} // ✅ DISABLE IF LIMIT REACHED
                 />
                 <span className="suffix">%</span>
               </div>
@@ -329,8 +389,13 @@ function InterestCalculator({ onClose }) {
                   onChange={(e) => setTime(Number(e.target.value))}
                   min="1"
                   step="1"
+                  disabled={!canUse} // ✅ DISABLE IF LIMIT REACHED
                 />
-                <select value={timeUnit} onChange={(e) => setTimeUnit(e.target.value)}>
+                <select 
+                  value={timeUnit} 
+                  onChange={(e) => setTimeUnit(e.target.value)}
+                  disabled={!canUse} // ✅ DISABLE IF LIMIT REACHED
+                >
                   <option value="months">Months</option>
                   <option value="years">Years</option>
                 </select>
@@ -340,7 +405,11 @@ function InterestCalculator({ onClose }) {
             {mode !== 'simple' && (
               <div className="input-group">
                 <label>Compound Frequency</label>
-                <select value={frequency} onChange={(e) => setFrequency(e.target.value)}>
+                <select 
+                  value={frequency} 
+                  onChange={(e) => setFrequency(e.target.value)}
+                  disabled={!canUse} // ✅ DISABLE IF LIMIT REACHED
+                >
                   <option value="daily">Daily</option>
                   <option value="monthly">Monthly</option>
                   <option value="quarterly">Quarterly</option>
@@ -364,6 +433,7 @@ function InterestCalculator({ onClose }) {
                       onChange={(e) => setContribution(Number(e.target.value))}
                       min="0"
                       step="10"
+                      disabled={!canUse} // ✅ DISABLE IF LIMIT REACHED
                     />
                   </div>
                 </div>
@@ -373,6 +443,7 @@ function InterestCalculator({ onClose }) {
                   <select
                     value={contributionFrequency}
                     onChange={(e) => setContributionFrequency(e.target.value)}
+                    disabled={!canUse} // ✅ DISABLE IF LIMIT REACHED
                   >
                     <option value="weekly">Weekly</option>
                     <option value="monthly">Monthly</option>
@@ -384,19 +455,39 @@ function InterestCalculator({ onClose }) {
             )}
           </div>
 
-          {/* Actions */}
-          <div className="actions-row">
-            <button className="btn-action secondary" onClick={handleReset}>
-              <RefreshCw size={16} />
-              Reset
+          {/* ✅ CALCULATE BUTTON */}
+          <div className="calculate-section">
+            <button 
+              className="btn-calculate"
+              onClick={handleCalculate}
+              disabled={!canUse} // ✅ DISABLE IF LIMIT REACHED
+            >
+              <Calculator size={20} />
+              Calculate Interest
             </button>
             {results && (
+              <button 
+                className="btn-clear"
+                onClick={handleClear}
+              >
+                Clear Results
+              </button>
+            )}
+          </div>
+
+          {/* Actions */}
+          {results && (
+            <div className="actions-row">
+              <button className="btn-action secondary" onClick={handleReset}>
+                <RefreshCw size={16} />
+                Reset
+              </button>
               <button className="btn-action secondary" onClick={downloadReport}>
                 <Download size={16} />
                 Download Report
               </button>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* Results Section */}
           {results && (

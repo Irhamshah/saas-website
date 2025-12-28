@@ -3,6 +3,8 @@ import { X, Plus, Trash2, Download, Calendar, DollarSign } from 'lucide-react';
 import jsPDF from 'jspdf';
 import toast from 'react-hot-toast';
 import './InvoiceGenerator.css';
+import { useUsageLimit } from '../hooks/useUsageLimit';
+import UsageIndicator from './UsageIndicator';
 
 function InvoiceGenerator({ onClose }) {
   // Invoice details
@@ -34,6 +36,17 @@ function InvoiceGenerator({ onClose }) {
 
   // Notes
   const [notes, setNotes] = useState('');
+
+  // Usage limit
+  const {
+    usageCount,
+    usageRemaining,
+    usagePercentage,
+    canUse,
+    isPremium,
+    incrementUsage,
+    showLimitError,
+  } = useUsageLimit('invoice-generator', 3);
 
   // Add item
   const addItem = () => {
@@ -101,7 +114,12 @@ function InvoiceGenerator({ onClose }) {
   };
 
   // Generate PDF
-  const generatePDF = () => {
+  const generatePDF = async () => {
+    if (!canUse) {
+      showLimitError();
+      return;
+    }
+
     if (!companyName || !clientName) {
       toast.error('Please enter company and client names');
       return;
@@ -276,6 +294,7 @@ function InvoiceGenerator({ onClose }) {
 
       // Save
       doc.save(`invoice-${invoiceNumber}.pdf`);
+      await incrementUsage();
       toast.success('Invoice generated successfully!');
     } catch (error) {
       console.error('PDF generation error:', error);
@@ -295,6 +314,12 @@ function InvoiceGenerator({ onClose }) {
         </div>
 
         <div className="invoice-content">
+          <UsageIndicator
+            usageCount={usageCount}
+            usageRemaining={usageRemaining}
+            usagePercentage={usagePercentage}
+            isPremium={isPremium}
+          />
           {/* Invoice Info */}
           <div className="section">
             <h3>Invoice Details</h3>

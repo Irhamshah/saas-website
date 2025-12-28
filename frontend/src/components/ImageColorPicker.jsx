@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { X, Upload, Droplet, Copy, Check, Download, Palette, Image as ImageIcon } from 'lucide-react';
 import toast from 'react-hot-toast';
 import './ImageColorPicker.css';
+import { useUsageLimit } from '../hooks/useUsageLimit';
+import UsageIndicator from './UsageIndicator';
 
 function ImageColorPicker({ onClose }) {
   const [image, setImage] = useState(null);
@@ -15,6 +17,16 @@ function ImageColorPicker({ onClose }) {
   const canvasRef = useRef(null);
   const hiddenCanvasRef = useRef(null);
   const fileInputRef = useRef(null);
+
+  const {
+    usageCount,
+    usageRemaining,
+    usagePercentage,
+    canUse,
+    isPremium,
+    incrementUsage,
+    showLimitError,
+  } = useUsageLimit('color-picker', 3);
 
   // Handle file upload
   const handleFileSelect = (e) => {

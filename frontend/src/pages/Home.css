@@ -4,20 +4,20 @@
 
 /* Hero Section */
 .hero {
-  padding: 4rem 2rem;
+  padding: 3rem 2rem; /* ✅ REDUCED from 4rem */
   background: linear-gradient(135deg, rgba(45, 91, 255, 0.05), rgba(30, 64, 175, 0.05));
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .hero-content {
-  max-width: 800px;
+  max-width: 700px; /* ✅ REDUCED from 800px */
   margin: 0 auto;
   text-align: center;
 }
 
 .hero-title {
   font-family: 'Fraunces', serif;
-  font-size: 4rem;
+  font-size: 3.5rem; /* ✅ REDUCED from 4rem */
   font-weight: 800;
   margin: 0 0 1rem 0;
   letter-spacing: -0.03em;
@@ -39,23 +39,23 @@
 }
 
 .hero-subtitle {
-  font-size: 1.5rem;
+  font-size: 1.35rem; /* ✅ REDUCED from 1.5rem */
   color: rgba(255, 255, 255, 0.9);
   margin: 0 0 1rem 0;
   font-weight: 600;
 }
 
 .hero-description {
-  font-size: 1.1rem;
+  font-size: 1rem; /* ✅ REDUCED from 1.1rem */
   color: rgba(255, 255, 255, 0.6);
-  margin: 0 0 3rem 0;
+  margin: 0 0 2.5rem 0; /* ✅ REDUCED from 3rem */
   line-height: 1.6;
 }
 
 .hero-stats {
   display: flex;
   justify-content: center;
-  gap: 3rem;
+  gap: 2.5rem; /* ✅ REDUCED from 3rem */
 }
 
 .stat {
@@ -65,58 +65,58 @@
 }
 
 .stat-value {
-  font-size: 2.5rem;
+  font-size: 2.25rem; /* ✅ REDUCED from 2.5rem */
   font-weight: 800;
   color: #2D5BFF;
 }
 
 .stat-label {
-  font-size: 0.95rem;
+  font-size: 0.9rem; /* ✅ REDUCED from 0.95rem */
   color: rgba(255, 255, 255, 0.6);
   font-weight: 500;
 }
 
 /* Categories Section */
 .categories {
-  padding: 4rem 2rem;
-  max-width: 1400px;
+  padding: 3rem 2rem; /* ✅ REDUCED from 4rem */
+  max-width: 1000px; /* ✅ REDUCED from 1400px */
   margin: 0 auto;
 }
 
 .categories-header {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 2.5rem; /* ✅ REDUCED from 3rem */
 }
 
 .categories-header h2 {
   font-family: 'Fraunces', serif;
-  font-size: 2.5rem;
+  font-size: 2.25rem; /* ✅ REDUCED from 2.5rem */
   font-weight: 700;
   color: #fff;
   margin: 0 0 1rem 0;
 }
 
 .categories-header p {
-  font-size: 1.1rem;
+  font-size: 1rem; /* ✅ REDUCED from 1.1rem */
   color: rgba(255, 255, 255, 0.6);
   margin: 0;
 }
 
 .categories-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* ✅ REDUCED from 350px */
+  gap: 1.5rem; /* ✅ REDUCED from 2rem */
 }
 
 .category-card {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 20px;
-  padding: 2rem;
+  padding: 1.75rem; /* ✅ REDUCED from 2rem */
   text-decoration: none;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1rem; /* ✅ REDUCED from 1.25rem */
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
@@ -146,8 +146,8 @@
 }
 
 .category-icon {
-  width: 60px;
-  height: 60px;
+  width: 55px; /* ✅ REDUCED from 60px */
+  height: 55px;
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -155,14 +155,14 @@
 }
 
 .category-name {
-  font-size: 1.5rem;
+  font-size: 1.35rem; /* ✅ REDUCED from 1.5rem */
   font-weight: 700;
   color: #fff;
   margin: 0;
 }
 
 .category-description {
-  font-size: 1rem;
+  font-size: 0.95rem; /* ✅ REDUCED from 1rem */
   color: rgba(255, 255, 255, 0.6);
   margin: 0;
   line-height: 1.5;
@@ -175,11 +175,11 @@
 }
 
 .tool-tag {
-  padding: 0.375rem 0.75rem;
+  padding: 0.35rem 0.7rem; /* ✅ REDUCED from 0.375rem 0.75rem */
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 6px;
-  font-size: 0.8rem;
+  font-size: 0.75rem; /* ✅ REDUCED from 0.8rem */
   color: rgba(255, 255, 255, 0.7);
   font-weight: 500;
 }
@@ -199,8 +199,8 @@
 
 /* Features Section */
 .features {
-  padding: 4rem 2rem;
-  max-width: 1400px;
+  padding: 3rem 2rem; /* ✅ REDUCED from 4rem */
+  max-width: 1000px; /* ✅ REDUCED from 1400px */
   margin: 0 auto;
   background: rgba(255, 255, 255, 0.02);
   border-radius: 24px;
@@ -208,12 +208,12 @@
 
 .features-header {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 2.5rem; /* ✅ REDUCED from 3rem */
 }
 
 .features-header h2 {
   font-family: 'Fraunces', serif;
-  font-size: 2.5rem;
+  font-size: 2.25rem; /* ✅ REDUCED from 2.5rem */
   font-weight: 700;
   color: #fff;
   margin: 0;
@@ -221,15 +221,15 @@
 
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); /* ✅ REDUCED from 280px */
+  gap: 1.5rem; /* ✅ REDUCED from 2rem */
 }
 
 .feature-card {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 16px;
-  padding: 2rem;
+  padding: 1.75rem; /* ✅ REDUCED from 2rem */
   text-align: center;
   transition: all 0.3s ease;
 }
@@ -240,53 +240,104 @@
 }
 
 .feature-icon {
-  font-size: 3rem;
+  font-size: 2.75rem; /* ✅ REDUCED from 3rem */
   margin-bottom: 1rem;
 }
 
 .feature-card h3 {
-  font-size: 1.25rem;
+  font-size: 1.15rem; /* ✅ REDUCED from 1.25rem */
   font-weight: 700;
   color: #fff;
   margin: 0 0 0.75rem 0;
 }
 
 .feature-card p {
-  font-size: 0.95rem;
+  font-size: 0.9rem; /* ✅ REDUCED from 0.95rem */
   color: rgba(255, 255, 255, 0.6);
   margin: 0;
   line-height: 1.6;
 }
 
-/* Responsive */
+/* ============================================
+   BANNER AD CONTAINERS
+   ============================================ */
+
+/* Wrapper for home + ads */
+.home-with-ads {
+  display: flex;
+  gap: 2rem;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Left sidebar ad */
+.home-ad-sidebar-left {
+  width: 160px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 100px;
+  height: fit-content;
+}
+
+/* Right sidebar ad */
+.home-ad-sidebar-right {
+  width: 160px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 100px;
+  height: fit-content;
+}
+
+/* Main content area */
+.home-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Ad placeholder styling */
+.home-ad-banner {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  min-height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.875rem;
+  text-align: center;
+  padding: 1rem;
+}
+
 @media (max-width: 768px) {
   .hero {
-    padding: 3rem 1.5rem;
+    padding: 2.5rem 1.5rem;
   }
   
   .hero-title {
-    font-size: 2.5rem;
+    font-size: 2.25rem;
   }
   
   .hero-subtitle {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
   }
   
   .hero-description {
-    font-size: 1rem;
+    font-size: 0.95rem;
   }
   
   .hero-stats {
-    gap: 2rem;
+    gap: 1.75rem;
   }
   
   .stat-value {
-    font-size: 2rem;
+    font-size: 1.875rem;
   }
   
   .categories,
   .features {
-    padding: 3rem 1.5rem;
+    padding: 2.5rem 1.5rem;
   }
   
   .categories-grid {
@@ -295,6 +346,34 @@
   
   .categories-header h2,
   .features-header h2 {
-    font-size: 2rem;
+    font-size: 1.875rem;
   }
 }
+
+/* ============================================
+   SIZE COMPARISON
+   ============================================ */
+
+/* 
+BEFORE → AFTER
+
+HERO:
+- max-width: 800px → 700px
+- title: 4rem → 3.5rem
+- subtitle: 1.5rem → 1.35rem
+- description: 1.1rem → 1rem
+- stats gap: 3rem → 2.5rem
+
+CATEGORIES:
+- max-width: 1400px → 1000px
+- grid minmax: 350px → 280px
+- gap: 2rem → 1.5rem
+- title: 2.5rem → 2.25rem
+
+FEATURES:
+- max-width: 1400px → 1000px
+- grid minmax: 280px → 240px
+- gap: 2rem → 1.5rem
+
+This gives you ~400px total for side ads (200px each side)
+*/

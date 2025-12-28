@@ -3,6 +3,8 @@ import { X, Upload, Trash2, Image as ImageIcon, Download, FileText, ArrowUp, Arr
 import { PDFDocument } from 'pdf-lib';
 import toast from 'react-hot-toast';
 import './ImageToPDF.css';
+import { useUsageLimit } from '../hooks/useUsageLimit';
+import UsageIndicator from './UsageIndicator';
 
 function ImageToPDF({ onClose }) {
   const [imageFiles, setImageFiles] = useState([]);
@@ -15,23 +17,34 @@ function ImageToPDF({ onClose }) {
     addFiles(files);
   };
 
+  // ✅ Usage limit hook
+  const {
+    usageCount,
+    usageRemaining,
+    usagePercentage,
+    canUse,
+    isPremium,
+    incrementUsage,
+    showLimitError,
+  } = useUsageLimit('image-pdf', 3);
+
   const handleDrop = (e) => {
     e.preventDefault();
     const files = Array.from(e.dataTransfer.files).filter(
       file => file.type.startsWith('image/')
     );
-    
+
     if (files.length === 0) {
       toast.error('Please drop image files only');
       return;
     }
-    
+
     addFiles(files);
   };
 
   const addFiles = async (files) => {
     const validFiles = files.filter(file => file.type.startsWith('image/'));
-    
+
     if (validFiles.length !== files.length) {
       toast.error('Some files were not images and were skipped');
     }
@@ -45,7 +58,7 @@ function ImageToPDF({ onClose }) {
       validFiles.map(async (file, index) => {
         const preview = await createPreview(file);
         const dimensions = await getImageDimensions(file);
-        
+
         return {
           id: Date.now() + index,
           file: file,
@@ -126,6 +139,12 @@ function ImageToPDF({ onClose }) {
   };
 
   const convertToPDF = async () => {
+    // ✅ CHECK LIMIT FIRST
+    if (!canUse) {
+      showLimitError();
+      return;
+    }
+
     if (imageFiles.length === 0) {
       toast.error('Please add images to convert');
       return;
@@ -150,7 +169,7 @@ function ImageToPDF({ onClose }) {
           const canvas = document.createElement('canvas');
           const ctx = canvas.getContext('2d');
           const img = new Image();
-          
+
           await new Promise((resolve) => {
             img.onload = resolve;
             img.src = imageFile.preview;
@@ -159,7 +178,7 @@ function ImageToPDF({ onClose }) {
           canvas.width = img.width;
           canvas.height = img.height;
           ctx.drawImage(img, 0, 0);
-          
+
           const jpegDataUrl = canvas.toDataURL('image/jpeg', 0.95);
           const jpegBytes = await fetch(jpegDataUrl).then(res => res.arrayBuffer());
           image = await pdfDoc.embedJpg(jpegBytes);
@@ -208,6 +227,8 @@ function ImageToPDF({ onClose }) {
       const blob = new Blob([pdfBytes], { type: 'application/pdf' });
       setPdfBlob(blob);
 
+      await incrementUsage();
+      
       toast.success('PDF created successfully! 🎉');
     } catch (error) {
       console.error('Conversion error:', error);
@@ -228,7 +249,7 @@ function ImageToPDF({ onClose }) {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-    
+
     toast.success('Downloaded!');
   };
 
@@ -252,6 +273,13 @@ function ImageToPDF({ onClose }) {
         </div>
 
         <div className="image-pdf-content">
+          {/* ✅ ADD USAGE INDICATOR */}
+          <UsageIndicator
+            usageCount={usageCount}
+            usageRemaining={usageRemaining}
+            usagePercentage={usagePercentage}
+            isPremium={isPremium}
+          />
           {/* Page Size Selection */}
           <div className="page-size-settings">
             <div className="settings-label">
@@ -325,7 +353,7 @@ function ImageToPDF({ onClose }) {
                       <img src={image.preview} alt={image.name} />
                       <div className="image-order">{index + 1}</div>
                     </div>
-                    
+
                     <div className="image-info">
                       <div className="image-name">{image.name}</div>
                       <div className="image-meta">

@@ -2,6 +2,8 @@ import React, { useState, useRef } from 'react';
 import { X, Copy, Check, Download, Upload, Maximize2, FileText } from 'lucide-react';
 import toast from 'react-hot-toast';
 import './SQLFormatter.css';
+import { useUsageLimit } from '../hooks/useUsageLimit';
+import UsageIndicator from './UsageIndicator';
 
 function SQLFormatter({ onClose }) {
   const [input, setInput] = useState('');
@@ -24,8 +26,25 @@ function SQLFormatter({ onClose }) {
     'COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'CAST', 'UNION', 'ALL'
   ];
 
+  // ✅ Usage limit hook
+  const {
+    usageCount,
+    usageRemaining,
+    usagePercentage,
+    canUse,
+    isPremium,
+    incrementUsage,
+    showLimitError,
+  } = useUsageLimit('sql-formatter', 3);
+
   // Format SQL
-  const formatSQL = (sql) => {
+  const formatSQL = async (sql) => {
+    // ✅ CHECK LIMIT FIRST
+    if (!canUse) {
+      showLimitError();
+      return;
+    }
+
     if (!sql.trim()) {
       toast.error('Please enter SQL to format');
       return;
@@ -33,19 +52,19 @@ function SQLFormatter({ onClose }) {
 
     try {
       let formatted = sql;
-      
+
       // Remove extra whitespace
       formatted = formatted.replace(/\s+/g, ' ').trim();
-      
+
       // Apply uppercase/lowercase to keywords
       keywords.forEach(keyword => {
         const regex = new RegExp(`\\b${keyword}\\b`, 'gi');
         formatted = formatted.replace(regex, uppercase ? keyword : keyword.toLowerCase());
       });
-      
+
       // Add newlines and indentation
       const indent = ' '.repeat(indentSize);
-      
+
       // Split on major keywords
       formatted = formatted
         // Major clauses on new lines
@@ -61,17 +80,17 @@ function SQLFormatter({ onClose }) {
         .map(line => line.trim())
         .filter(line => line.length > 0)
         .join('\n');
-      
+
       // Add lines between queries (semicolons)
       const separator = '\n'.repeat(linesBetweenQueries + 1);
       formatted = formatted.replace(/;\s*/g, ';' + separator);
-      
+
       // Calculate statistics
       const lines = formatted.split('\n').length;
       const characters = formatted.length;
       const words = formatted.split(/\s+/).length;
       const queries = (formatted.match(/;/g) || []).length + (formatted.includes(';') ? 0 : 1);
-      
+
       const keywordCounts = {};
       keywords.forEach(keyword => {
         const regex = new RegExp(`\\b${keyword}\\b`, 'gi');
@@ -80,7 +99,7 @@ function SQLFormatter({ onClose }) {
           keywordCounts[keyword] = matches.length;
         }
       });
-      
+
       setOutput(formatted);
       setStats({
         lines,
@@ -92,7 +111,10 @@ function SQLFormatter({ onClose }) {
           .sort((a, b) => b[1] - a[1])
           .slice(0, 5)
       });
-      
+
+      // ✅ INCREMENT USAGE AFTER SUCCESS
+      await incrementUsage();
+
       toast.success('SQL formatted successfully!');
     } catch (err) {
       toast.error('Error formatting SQL');
@@ -106,12 +128,12 @@ function SQLFormatter({ onClose }) {
       toast.error('Please enter SQL to minify');
       return;
     }
-    
+
     let minified = input
       .replace(/\s+/g, ' ')
       .replace(/\s*([(),;=<>])\s*/g, '$1')
       .trim();
-    
+
     setOutput(minified);
     setStats({
       lines: 1,
@@ -121,7 +143,7 @@ function SQLFormatter({ onClose }) {
       size: new Blob([minified]).size,
       topKeywords: []
     });
-    
+
     toast.success('SQL minified!');
   };
 
@@ -200,6 +222,13 @@ function SQLFormatter({ onClose }) {
         </div>
 
         <div className="formatter-content">
+          {/* ✅ ADD USAGE INDICATOR */}
+          <UsageIndicator
+            usageCount={usageCount}
+            usageRemaining={usageRemaining}
+            usagePercentage={usagePercentage}
+            isPremium={isPremium}
+          />
           {/* Controls */}
           <div className="controls-section">
             <div className="controls-group">
@@ -211,7 +240,7 @@ function SQLFormatter({ onClose }) {
                   <option value={8}>8 spaces</option>
                 </select>
               </div>
-              
+
               <div className="control-item">
                 <label>Query Spacing</label>
                 <select value={linesBetweenQueries} onChange={(e) => setLinesBetweenQueries(Number(e.target.value))}>
@@ -221,7 +250,7 @@ function SQLFormatter({ onClose }) {
                   <option value={3}>3 lines</option>
                 </select>
               </div>
-              
+
               <div className="control-item checkbox">
                 <label>
                   <input
@@ -340,7 +369,7 @@ function SQLFormatter({ onClose }) {
                   <span className="stat-value">{formatSize(stats.size)}</span>
                 </div>
               </div>
-              
+
               {stats.topKeywords.length > 0 && (
                 <div className="keywords-section">
                   <h4>Top Keywords</h4>

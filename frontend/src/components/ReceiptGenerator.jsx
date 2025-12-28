@@ -3,6 +3,8 @@ import { X, Plus, Trash2, Download } from 'lucide-react';
 import jsPDF from 'jspdf';
 import toast from 'react-hot-toast';
 import './ReceiptGenerator.css';
+import { useUsageLimit } from '../hooks/useUsageLimit';
+import UsageIndicator from './UsageIndicator';
 
 function ReceiptGenerator({ onClose }) {
   // Receipt details
@@ -56,12 +58,12 @@ function ReceiptGenerator({ onClose }) {
     setItems(items.map(item => {
       if (item.id === id) {
         const updatedItem = { ...item, [field]: value };
-        
+
         // Auto-calculate total
         if (field === 'quantity' || field === 'unitPrice') {
           updatedItem.total = updatedItem.quantity * updatedItem.unitPrice;
         }
-        
+
         return updatedItem;
       }
       return item;
@@ -82,8 +84,25 @@ function ReceiptGenerator({ onClose }) {
     return calculateSubtotal() + calculateTax();
   };
 
+  // ✅ Usage limit hook
+  const {
+    usageCount,
+    usageRemaining,
+    usagePercentage,
+    canUse,
+    isPremium,
+    incrementUsage,
+    showLimitError,
+  } = useUsageLimit('receipt', 3);
+
   // Generate PDF
-  const generatePDF = () => {
+  const generatePDF = async () => {
+    // ✅ CHECK LIMIT FIRST
+    if (!canUse) {
+      showLimitError();
+      return;
+    }
+
     if (!businessName) {
       toast.error('Please enter business name');
       return;
@@ -115,7 +134,7 @@ function ReceiptGenerator({ onClose }) {
       doc.setFontSize(10);
       doc.setFont(undefined, 'normal');
       doc.setTextColor(80, 80, 80);
-      
+
       if (businessAddress) {
         const addressLines = doc.splitTextToSize(businessAddress, pageWidth - 40);
         addressLines.forEach(line => {
@@ -123,17 +142,17 @@ function ReceiptGenerator({ onClose }) {
           yPos += 5;
         });
       }
-      
+
       if (businessPhone) {
         doc.text(businessPhone, pageWidth / 2, yPos, { align: 'center' });
         yPos += 5;
       }
-      
+
       if (businessEmail) {
         doc.text(businessEmail, pageWidth / 2, yPos, { align: 'center' });
         yPos += 5;
       }
-      
+
       yPos += 5;
 
       // Divider
@@ -147,13 +166,13 @@ function ReceiptGenerator({ onClose }) {
       doc.text(`Receipt #: ${receiptNumber}`, 20, yPos);
       doc.text(`Date: ${receiptDate}`, pageWidth - 20, yPos, { align: 'right' });
       yPos += 5;
-      
+
       if (customerName) {
         doc.text(`Customer: ${customerName}`, 20, yPos);
       }
       doc.text(`Time: ${receiptTime}`, pageWidth - 20, yPos, { align: 'right' });
       yPos += 5;
-      
+
       doc.text(`Payment: ${paymentMethod}`, 20, yPos);
       yPos += 10;
 
@@ -223,6 +242,8 @@ function ReceiptGenerator({ onClose }) {
 
       // Save
       doc.save(`receipt-${receiptNumber}.pdf`);
+      // ✅ INCREMENT USAGE AFTER SUCCESS
+      await incrementUsage();
       toast.success('Receipt generated successfully!');
     } catch (error) {
       console.error('PDF generation error:', error);
@@ -242,6 +263,13 @@ function ReceiptGenerator({ onClose }) {
         </div>
 
         <div className="receipt-content">
+          {/* ✅ ADD USAGE INDICATOR */}
+          <UsageIndicator
+            usageCount={usageCount}
+            usageRemaining={usageRemaining}
+            usagePercentage={usagePercentage}
+            isPremium={isPremium}
+          />
           {/* Receipt Info */}
           <div className="section">
             <h3>Receipt Details</h3>
