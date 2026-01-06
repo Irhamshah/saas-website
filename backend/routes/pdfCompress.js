@@ -12,13 +12,15 @@ const __dirname = path.dirname(__filename);
 const router = express.Router();
 const execPromise = promisify(exec);
 
+// ✅ IMPROVED: Use environment variable for upload directory (Railway-friendly)
+const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(__dirname, '../uploads');
+
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: async (req, file, cb) => {
-    const uploadDir = path.join(__dirname, '../uploads');
     try {
-      await fs.mkdir(uploadDir, { recursive: true });
-      cb(null, uploadDir);
+      await fs.mkdir(UPLOAD_DIR, { recursive: true });
+      cb(null, UPLOAD_DIR);
     } catch (error) {
       cb(error, null);
     }
@@ -49,31 +51,31 @@ const getGhostscriptSettings = (quality) => {
     case 'low':
       return {
         setting: '/screen',
-        description: 'Low quality (48 dpi)',
-        dpi: 48,
-        colorImageResolution: 48,
-        grayImageResolution: 48
-      };
-    case 'medium':
-      return {
-        setting: '/ebook',
-        description: 'Medium quality (72 dpi)',
+        description: 'Low quality (72 dpi)',
         dpi: 72,
         colorImageResolution: 72,
         grayImageResolution: 72
       };
-    case 'high':
+    case 'medium':
       return {
-        setting: '/printer',
-        description: 'High quality (150 dpi)',
+        setting: '/ebook',
+        description: 'Medium quality (150 dpi)',
         dpi: 150,
         colorImageResolution: 150,
         grayImageResolution: 150
       };
+    case 'high':
+      return {
+        setting: '/printer',
+        description: 'High quality (300 dpi)',
+        dpi: 300,
+        colorImageResolution: 300,
+        grayImageResolution: 300
+      };
     case 'maximum':
       return {
         setting: '/prepress',
-        description: 'Prepress quality (300+ dpi)',
+        description: 'Maximum quality (300+ dpi)',
         dpi: 300,
         colorImageResolution: 300,
         grayImageResolution: 300
@@ -81,7 +83,7 @@ const getGhostscriptSettings = (quality) => {
     default:
       return {
         setting: '/ebook',
-        description: 'eBook quality (150 dpi)',
+        description: 'Medium quality (150 dpi)',
         dpi: 150,
         colorImageResolution: 150,
         grayImageResolution: 150
@@ -122,7 +124,7 @@ router.post('/compress', upload.single('pdf'), async (req, res) => {
     const originalStats = await fs.stat(inputPath);
     const originalSize = originalStats.size;
 
-    // Ghostscript compression command
+    // ✅ IMPROVED: Add timeout to prevent hanging (Railway has request timeouts)
     const gsCommand = `gs -sDEVICE=pdfwrite \
       -dCompatibilityLevel=1.4 \
       -dPDFSETTINGS=${settings.setting} \
@@ -139,8 +141,8 @@ router.post('/compress', upload.single('pdf'), async (req, res) => {
       -sOutputFile="${outputPath}" \
       "${inputPath}"`;
 
-    // Execute compression
-    await execPromise(gsCommand);
+    // ✅ IMPROVED: Execute with 60-second timeout
+    await execPromise(gsCommand, { timeout: 60000 });
 
     // Check if output file exists
     try {
@@ -177,30 +179,36 @@ router.post('/compress', upload.single('pdf'), async (req, res) => {
     // Send file
     res.send(compressedBuffer);
 
-    // Cleanup files after sending
-    setTimeout(async () => {
+    // ✅ IMPROVED: Immediate cleanup using setImmediate instead of setTimeout
+    setImmediate(async () => {
       try {
-        await fs.unlink(inputPath);
-        await fs.unlink(outputPath);
-        console.log('🗑️ Cleaned up temp files');
+        await fs.unlink(inputPath).catch(() => {});
+        await fs.unlink(outputPath).catch(() => {});
+        console.log('🗑️  Cleaned up temp files');
       } catch (error) {
         console.error('Error cleaning up files:', error);
       }
-    }, 1000);
+    });
 
   } catch (error) {
     console.error('❌ Compression error:', error);
 
     // Cleanup on error
     try {
-      if (inputPath) await fs.unlink(inputPath);
-      if (outputPath) await fs.unlink(outputPath);
+      if (inputPath) await fs.unlink(inputPath).catch(() => {});
+      if (outputPath) await fs.unlink(outputPath).catch(() => {});
     } catch (cleanupError) {
       console.error('Error cleaning up files:', cleanupError);
     }
 
+    // ✅ IMPROVED: Better error messages
+    let errorMessage = 'PDF compression failed';
+    if (error.message && error.message.includes('timeout')) {
+      errorMessage = 'Compression timed out - file may be too large';
+    }
+
     res.status(500).json({
-      error: 'PDF compression failed',
+      error: errorMessage,
       message: error.message
     });
   }
@@ -251,7 +259,8 @@ router.post('/compress-batch', upload.array('pdfs', 10), async (req, res) => {
           -sOutputFile="${outputPath}" \
           "${inputPath}"`;
 
-        await execPromise(gsCommand);
+        // ✅ IMPROVED: Add timeout for batch processing too
+        await execPromise(gsCommand, { timeout: 60000 });
 
         // Get compressed size
         const compressedStats = await fs.stat(outputPath);
@@ -270,8 +279,8 @@ router.post('/compress-batch', upload.array('pdfs', 10), async (req, res) => {
         });
 
         // Cleanup
-        await fs.unlink(inputPath);
-        await fs.unlink(outputPath);
+        await fs.unlink(inputPath).catch(() => {});
+        await fs.unlink(outputPath).catch(() => {});
 
         console.log(`✅ Compressed ${file.originalname}: ${reduction}% reduction`);
 
@@ -284,8 +293,8 @@ router.post('/compress-batch', upload.array('pdfs', 10), async (req, res) => {
 
         // Cleanup on error
         try {
-          if (inputPath) await fs.unlink(inputPath);
-          if (outputPath) await fs.unlink(outputPath);
+          if (inputPath) await fs.unlink(inputPath).catch(() => {});
+          if (outputPath) await fs.unlink(outputPath).catch(() => {});
         } catch (cleanupError) {
           console.error('Error cleaning up:', cleanupError);
         }
@@ -324,9 +333,42 @@ router.get('/check', async (req, res) => {
     res.status(500).json({
       installed: false,
       message: 'Ghostscript is not installed',
-      instructions: 'Install with: brew install ghostscript (Mac) or apt-get install ghostscript (Linux)'
+      instructions: 'Add nixpacks.toml with ghostscript to your Railway project'
     });
   }
 });
+
+// ✅ NEW: Cleanup old files periodically (prevents disk space issues)
+const cleanupOldFiles = async () => {
+  try {
+    const files = await fs.readdir(UPLOAD_DIR);
+    const now = Date.now();
+    const ONE_HOUR = 60 * 60 * 1000;
+
+    for (const file of files) {
+      const filePath = path.join(UPLOAD_DIR, file);
+      try {
+        const stats = await fs.stat(filePath);
+        
+        // Delete files older than 1 hour
+        if (now - stats.mtimeMs > ONE_HOUR) {
+          await fs.unlink(filePath);
+          console.log('🗑️  Cleaned up old file:', file);
+        }
+      } catch (error) {
+        // File might have been deleted already
+        continue;
+      }
+    }
+  } catch (error) {
+    console.error('Error in cleanup:', error);
+  }
+};
+
+// Run cleanup every hour
+setInterval(cleanupOldFiles, 60 * 60 * 1000);
+
+// ✅ NEW: Initial cleanup on startup
+cleanupOldFiles();
 
 export default router;
