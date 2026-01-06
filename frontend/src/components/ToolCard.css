@@ -10,6 +10,7 @@
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  text-decoration: none; /* ✅ Remove underline */
 }
 
 .tool-card::before {
@@ -29,6 +30,7 @@
   border-color: rgba(45, 91, 255, 0.3);
   transform: translateX(5px);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  text-decoration: none; /* ✅ Remove underline on hover */
 }
 
 .tool-card:hover::before {
@@ -59,11 +61,19 @@
   min-width: 0;
 }
 
+/* ✅ NEW: Header for title + badge */
+.tool-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
 .tool-card-name {
   font-size: 1.1rem;
   font-weight: 700;
   color: #fff;
-  margin: 0 0 0.5rem 0;
+  margin: 0;
 }
 
 .tool-card-description {
@@ -72,6 +82,63 @@
   margin: 0;
   line-height: 1.5;
 }
+
+/* ✅ IMPROVED: Premium Badge */
+.premium-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #000;
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.premium-badge svg {
+  flex-shrink: 0;
+}
+
+.tool-card:hover .premium-badge {
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.5);
+  transform: scale(1.05);
+}
+
+/* Alternative Premium Badge Styles (choose one) */
+
+/* Option 2: Purple gradient */
+/*
+.premium-badge {
+  background: linear-gradient(135deg, #8B5CF6, #6D28D9);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+}
+
+.tool-card:hover .premium-badge {
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.5);
+}
+*/
+
+/* Option 3: Elegant dark */
+/*
+.premium-badge {
+  background: linear-gradient(135deg, #1F2937, #111827);
+  color: #FFD700;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.tool-card:hover .premium-badge {
+  border-color: rgba(255, 215, 0, 0.5);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+}
+*/
 
 .tool-card-arrow {
   color: rgba(255, 255, 255, 0.3);
@@ -104,5 +171,15 @@
   
   .tool-card-description {
     font-size: 0.85rem;
+  }
+
+  .premium-badge {
+    font-size: 0.65rem;
+    padding: 0.25rem 0.6rem;
+  }
+
+  .premium-badge svg {
+    width: 10px;
+    height: 10px;
   }
 }

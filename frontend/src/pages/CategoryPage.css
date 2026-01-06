@@ -1,151 +1,242 @@
-/* Category Page - Narrower for Side Ads */
-.category-page {
-  min-height: calc(100vh - 80px - 80px);
-  padding: 3rem 2rem;
-  max-width: 1000px; /* ✅ REDUCED from 1400px */
-  margin: 0 auto;
-}
-
-/* Page Header */
-.page-header {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-  margin-bottom: 3rem;
-  padding-bottom: 2rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.page-icon {
-  width: 70px; /* ✅ REDUCED from 80px */
-  height: 70px;
-  background: linear-gradient(135deg, rgba(45, 91, 255, 0.2), rgba(30, 64, 175, 0.2));
-  border: 1px solid rgba(45, 91, 255, 0.3);
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #2D5BFF;
-  flex-shrink: 0;
-}
-
-.page-header-content {
-  flex: 1;
-}
-
-.page-title {
-  font-family: 'Fraunces', serif;
-  font-size: 2.25rem; /* ✅ REDUCED from 2.5rem */
-  font-weight: 700;
-  color: #fff;
-  margin: 0 0 0.75rem 0;
-  letter-spacing: -0.02em;
-}
-
-.page-description {
-  font-size: 1rem; /* ✅ REDUCED from 1.1rem */
-  color: rgba(255, 255, 255, 0.6);
-  margin: 0;
-  line-height: 1.6;
-}
-
-/* Tools Grid */
-.tools-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* ✅ REDUCED from 350px */
-  gap: 1.25rem; /* ✅ REDUCED from 1.5rem */
-}
+/* CategoryPage.css - With Ad Support */
 
 /* ============================================
-   BANNER AD CONTAINERS (Add these if needed)
+   PAGE WITH ADS LAYOUT
    ============================================ */
 
-/* Wrapper for page + ads */
-.page-with-ads {
-  display: flex;
-  gap: 2rem;
-  max-width: 1600px;
-  margin: 0 auto;
-  padding: 0 2rem;
-}
-
-/* Left sidebar ad */
-.ad-sidebar-left {
-  width: 160px;
-  flex-shrink: 0;
-  position: sticky;
-  top: 100px;
-  height: fit-content;
-}
-
-/* Right sidebar ad */
-.ad-sidebar-right {
-  width: 160px;
-  flex-shrink: 0;
-  position: sticky;
-  top: 100px;
-  height: fit-content;
-}
-
-/* Main content area */
-.page-content {
-  flex: 1;
-  min-width: 0; /* Prevents flex overflow */
-}
-
-/* Ad placeholder styling */
-.ad-banner {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px dashed rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  min-height: 600px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: rgba(255, 255, 255, 0.3);
-  font-size: 0.875rem;
-  text-align: center;
-  padding: 1rem;
-}
-
-@media (max-width: 768px) {
-  .category-page {
-    padding: 2rem 1.5rem;
+   .page-with-ads {
+    display: flex;
+    gap: 2rem;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+    min-height: calc(100vh - 80px - 80px);
   }
   
-  .page-header {
-    flex-direction: column;
+  /* Sidebar Ads */
+  .ad-sidebar-left,
+  .ad-sidebar-right {
+    width: 160px;
+    flex-shrink: 0;
+  }
+  
+  .ad-sidebar-left {
+    position: sticky;
+    top: 100px;
+    height: fit-content;
+  }
+  
+  .ad-sidebar-right {
+    position: sticky;
+    top: 100px;
+    height: fit-content;
+  }
+  
+  /* Main Content Area */
+  .page-content {
+    flex: 1;
+    min-width: 0;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  
+  /* Ad Placeholders */
+  .ad-banner {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px dashed rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.85rem;
+    font-weight: 600;
     text-align: center;
-    gap: 1.5rem;
+    transition: all 0.3s ease;
+  }
+  
+  .ad-banner:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.25);
+  }
+  
+  .ad-banner div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  /* Skyscraper Ad (160x600) */
+  .ad-skyscraper {
+    width: 160px;
+    min-height: 600px;
+  }
+  
+  /* Leaderboard Ad (728x90) */
+  .ad-leaderboard {
+    width: 100%;
+    max-width: 728px;
+    height: 90px;
+    margin: 0 auto;
+  }
+  
+  /* Bottom Ad Container */
+  .category-ad-bottom {
+    margin-top: 3rem;
+    display: flex;
+    justify-content: center;
+  }
+  
+  /* ============================================
+     CATEGORY PAGE (Main Content)
+     ============================================ */
+  
+  .category-page {
+    width: 100%;
+  }
+  
+  /* Page Header */
+  .page-header {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
+  .page-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, rgba(45, 91, 255, 0.2), rgba(30, 64, 175, 0.2));
+    border: 1px solid rgba(45, 91, 255, 0.3);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2D5BFF;
+    flex-shrink: 0;
+  }
+  
+  .page-header-content {
+    flex: 1;
   }
   
   .page-title {
-    font-size: 1.75rem; /* ✅ REDUCED from 2rem */
+    font-family: 'Fraunces', serif;
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 0.75rem 0;
+    letter-spacing: -0.02em;
   }
   
   .page-description {
-    font-size: 0.95rem;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0;
+    line-height: 1.6;
   }
   
+  /* Tools Grid */
   .tools-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
   }
-}
-
-/* ============================================
-   SIZE COMPARISON
-   ============================================ */
-
-/* 
-BEFORE → AFTER
-
-max-width: 1400px → 1000px
-page-icon: 80px → 70px
-page-title: 2.5rem → 2.25rem
-page-description: 1.1rem → 1rem
-tools-grid minmax: 350px → 280px
-gap: 1.5rem → 1.25rem
-
-This gives you ~400px total for side ads (200px each side)
-*/
+  
+  /* ============================================
+     RESPONSIVE - HIDE ADS ON SMALLER SCREENS
+     ============================================ */
+  
+  @media (max-width: 1400px) {
+    /* Hide sidebar ads on tablets and below */
+    .ad-sidebar-left,
+    .ad-sidebar-right {
+      display: none;
+    }
+  
+    .page-with-ads {
+      padding: 3rem 1.5rem;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .page-with-ads {
+      padding: 2rem 1.5rem;
+    }
+  
+    .category-page {
+      padding: 0;
+    }
+    
+    .page-header {
+      flex-direction: column;
+      text-align: center;
+      gap: 1.5rem;
+    }
+    
+    .page-title {
+      font-size: 1.75rem;
+    }
+    
+    .page-description {
+      font-size: 0.95rem;
+    }
+    
+    .tools-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+  
+    /* Adjust bottom ad for mobile */
+    .ad-leaderboard {
+      width: 100%;
+      max-width: 320px;
+      height: 100px;
+    }
+  
+    .ad-leaderboard span:first-child {
+      font-size: 0.75rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .page-with-ads {
+      padding: 1.5rem 1rem;
+    }
+  
+    .page-header {
+      padding-bottom: 1.5rem;
+    }
+  
+    .page-icon {
+      width: 60px;
+      height: 60px;
+    }
+  
+    .page-icon svg {
+      width: 36px;
+      height: 36px;
+    }
+  
+    .page-title {
+      font-size: 1.5rem;
+    }
+  
+    .page-description {
+      font-size: 0.9rem;
+    }
+  }
+  
+  /* ============================================
+     WITHOUT ADS VERSION (Keep for compatibility)
+     ============================================ */
+  
+  /* If you need a page without ads, use this class */
+  .category-page-no-ads {
+    min-height: calc(100vh - 80px - 80px);
+    padding: 3rem 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+  }

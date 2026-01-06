@@ -21,6 +21,10 @@ import Pricing from './pages/PricingPage';
 import Payment from './pages/Payment';
 import PaymentSuccess from './pages/PaymentSuccess';
 import './App.css';
+import PDFCompressorPage from './pages/tools/PDFCompressorPage';
+import PDFMergerPage from './pages/tools/PDFMergerPage';
+import ImageToPDFPage from './pages/tools/ImageToPDFPage';
+import PDFSplitterPage from './pages/tools/PDFSplitterPage';
 
 function AppContent() {
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -68,6 +72,10 @@ function AppContent() {
           <Route path="/generators" element={<GeneratorToolsPage />} />
           <Route path="/payment" element={<Payment />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
+          <Route path='/tools/pdf-compressor' element={<PDFCompressorPage/>} />
+          <Route path='/tools/pdf-merger' element={<PDFMergerPage/>} />
+          <Route path='/tools/image-to-pdf' element={<ImageToPDFPage/>} />
+          <Route path='/tools/pdf-splitter' element={<PDFSplitterPage/>} />
         </Routes>
       </main>
       

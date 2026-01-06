@@ -10,6 +10,7 @@
     "lucide-react": "^0.294.0",
     "papaparse": "^5.4.1",
     "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^5.4.530",
     "qrcode": "^1.5.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

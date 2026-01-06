@@ -1,0 +1,323 @@
+/* PDFMergerPage.css - Specific styles for PDF Merger page */
+
+/* Upload Area */
+.upload-area {
+    background: rgba(45, 91, 255, 0.05);
+    border: 2px dashed rgba(45, 91, 255, 0.3);
+    border-radius: 16px;
+    padding: 3rem 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 2rem;
+  }
+  
+  .upload-area:hover {
+    background: rgba(45, 91, 255, 0.1);
+    border-color: rgba(45, 91, 255, 0.5);
+    transform: translateY(-2px);
+  }
+  
+  .upload-area svg {
+    color: #2D5BFF;
+    margin-bottom: 1rem;
+  }
+  
+  .upload-area h3 {
+    font-size: 1.25rem;
+    color: #fff;
+    margin: 0 0 0.5rem 0;
+  }
+  
+  .upload-area p {
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0.25rem 0;
+    font-size: 0.95rem;
+  }
+  
+  /* Files Section */
+  .files-section {
+    margin-top: 2rem;
+  }
+  
+  .files-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .files-header h3 {
+    font-size: 1.25rem;
+    color: #fff;
+    margin: 0;
+  }
+  
+  .btn-text {
+    background: none;
+    border: none;
+    color: #EF4444;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: all 0.2s;
+  }
+  
+  .btn-text:hover {
+    background: rgba(239, 68, 68, 0.1);
+  }
+  
+  /* Files List */
+  .files-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .file-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: move;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+  
+  .file-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateX(4px);
+  }
+  
+  .file-item.processing {
+    border-color: rgba(45, 91, 255, 0.5);
+    background: rgba(45, 91, 255, 0.1);
+  }
+  
+  .file-item.completed {
+    border-color: rgba(16, 185, 129, 0.5);
+    background: rgba(16, 185, 129, 0.1);
+  }
+  
+  .file-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #EF4444;
+    flex-shrink: 0;
+  }
+  
+  .file-info-content {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .file-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 0.25rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .file-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.85rem;
+  }
+  
+  .file-size {
+    color: rgba(255, 255, 255, 0.5);
+  }
+  
+  .file-status {
+    color: rgba(45, 91, 255, 0.8);
+    font-weight: 600;
+  }
+  
+  .file-status.completed {
+    color: #10B981;
+  }
+  
+  .file-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .btn-icon {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.7);
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .btn-icon:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  .btn-icon:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+  
+  .btn-icon.delete {
+    color: #EF4444;
+    border-color: rgba(239, 68, 68, 0.3);
+  }
+  
+  .btn-icon.delete:hover:not(:disabled) {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.5);
+  }
+  
+  .file-order {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.4);
+    min-width: 40px;
+    text-align: right;
+  }
+  
+  /* Info Message */
+  .info-message {
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #F59E0B;
+    font-size: 0.9rem;
+  }
+  
+  /* Merge Actions */
+  .merge-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  
+  .btn-secondary {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .btn-secondary:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  .btn-secondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .btn-primary {
+    flex: 2;
+    background: linear-gradient(135deg, #2D5BFF, #1E40AF);
+    border: none;
+    color: #fff;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(45, 91, 255, 0.3);
+  }
+  
+  .btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  /* Spinner */
+  .spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+  
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .upload-area {
+      padding: 2rem 1.5rem;
+    }
+  
+    .file-item {
+      padding: 1rem;
+      flex-wrap: wrap;
+    }
+  
+    .file-info-content {
+      width: 100%;
+      order: 2;
+    }
+  
+    .file-actions {
+      order: 3;
+      width: 100%;
+      justify-content: flex-start;
+    }
+  
+    .file-order {
+      order: 1;
+    }
+  
+    .merge-actions {
+      flex-direction: column;
+    }
+  
+    .btn-primary,
+    .btn-secondary {
+      width: 100%;
+    }
+  }
