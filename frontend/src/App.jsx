@@ -25,6 +25,14 @@ import PDFCompressorPage from './pages/tools/PDFCompressorPage';
 import PDFMergerPage from './pages/tools/PDFMergerPage';
 import ImageToPDFPage from './pages/tools/ImageToPDFPage';
 import PDFSplitterPage from './pages/tools/PDFSplitterPage';
+import Base64ToolPage from './pages/tools/Base64ToolPage';
+import JSONFormatterPage from './pages/tools/JSONFormatterPage';
+import CSVJSONConverterPage from './pages/tools/CSVJSONConverterPage';
+import UUIDGeneratorPage from './pages/tools/UUIDGeneratorPage';
+import RegexTesterPage from './pages/tools/RegexTesterPage';
+import SQLFormatterPage from './pages/tools/SQLFormatterPage';
+import JWTDecoderPage from './pages/tools/JWTDecoderPage';
+import HashGeneratorPage from './pages/tools/HashGeneratorPage';
 
 function AppContent() {
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -76,6 +84,14 @@ function AppContent() {
           <Route path='/tools/pdf-merger' element={<PDFMergerPage/>} />
           <Route path='/tools/image-to-pdf' element={<ImageToPDFPage/>} />
           <Route path='/tools/pdf-splitter' element={<PDFSplitterPage/>} />
+          <Route path ='/tools/base64-tool' element={<Base64ToolPage/>} />
+          <Route path='/tools/json-formatter' element={<JSONFormatterPage/>} />
+          <Route path='/tools/csv-json-converter' element={<CSVJSONConverterPage/>} />
+          <Route path='/tools/uuid-generator' element={<UUIDGeneratorPage/>} />
+          <Route path='/tools/regex-tester' element={<RegexTesterPage/>} />
+          <Route path='/tools/sql-formatter' element={<SQLFormatterPage/>} />
+          <Route path='/tools/jwt-decoder' element={<JWTDecoderPage/>} />
+          <Route path='/tools/hash-generator' element={<HashGeneratorPage/>} />
         </Routes>
       </main>
       

@@ -1,0 +1,296 @@
+/* CSVJSONConverterPage.css - Specific styles for CSV/JSON Converter */
+
+/* Mode Switch Section */
+.mode-switch-section {
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .switch-mode-btn {
+    background: linear-gradient(135deg, #10B981, #059669);
+    border: none;
+    color: #fff;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: all 0.3s ease;
+  }
+  
+  .switch-mode-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+  }
+  
+  /* File Badge */
+  .file-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.5rem;
+    color: #10B981;
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+  
+  .file-badge button {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #10B981;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin-left: auto;
+    transition: all 0.2s;
+  }
+  
+  .file-badge button:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+  
+  /* Converter Grid */
+  .converter-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .converter-pane {
+    display: flex;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  
+  .pane-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .pane-header label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    margin: 0;
+  }
+  
+  .btn-text-small {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+  
+  .btn-text-small:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+  }
+  
+  .output-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .btn-icon {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.7);
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .btn-icon:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  /* Data Textarea */
+  .data-textarea {
+    flex: 1;
+    min-height: 350px;
+    background: rgba(0, 0, 0, 0.3);
+    border: none;
+    color: #fff;
+    padding: 1.25rem;
+    font-family: 'Courier New', 'Monaco', 'Consolas', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    resize: vertical;
+    transition: all 0.2s;
+  }
+  
+  .data-textarea:focus {
+    outline: none;
+    background: rgba(0, 0, 0, 0.4);
+  }
+  
+  .data-textarea:read-only {
+    cursor: default;
+  }
+  
+  .data-textarea::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+  }
+  
+  /* Custom scrollbar */
+  .data-textarea::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+  .data-textarea::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  
+  .data-textarea::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+  }
+  
+  .data-textarea::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+  
+  /* Actions Row */
+  .actions-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 3rem;
+  }
+  
+  .btn-action {
+    flex: 1;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  
+  .btn-action.primary {
+    background: linear-gradient(135deg, #2D5BFF, #1E40AF);
+    color: #fff;
+    flex: 2;
+  }
+  
+  .btn-action.primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(45, 91, 255, 0.3);
+  }
+  
+  .btn-action.primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  .btn-action.secondary {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+  }
+  
+  .btn-action.secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  /* Spinner */
+  .spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+  
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .converter-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .mode-switch-section {
+      margin-bottom: 1.5rem;
+    }
+  
+    .switch-mode-btn {
+      width: 100%;
+      justify-content: center;
+    }
+  
+    .file-badge {
+      font-size: 0.85rem;
+    }
+  
+    .actions-row {
+      flex-direction: column;
+    }
+  
+    .btn-action {
+      width: 100%;
+    }
+  
+    .data-textarea {
+      min-height: 250px;
+      font-size: 0.85rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .pane-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+  
+    .output-actions {
+      width: 100%;
+      justify-content: flex-end;
+    }
+  }

@@ -1,0 +1,349 @@
+/* JSONFormatterPage.css - Specific styles for JSON Formatter */
+
+/* Controls Section */
+.controls-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .controls-group {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  .control-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .control-item label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  .control-item select {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 150px;
+  }
+  
+  .control-item select:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+  
+  .control-item select:focus {
+    outline: none;
+    border-color: #2D5BFF;
+  }
+  
+  .control-item.checkbox {
+    flex-direction: row;
+    align-items: center;
+  }
+  
+  .control-item.checkbox label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    margin: 0;
+  }
+  
+  .control-item.checkbox input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #2D5BFF;
+  }
+  
+  .control-item.checkbox span {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+  
+  /* Actions Group */
+  .actions-group {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+  
+  .btn-action {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+  }
+  
+  .btn-action:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+  }
+  
+  .btn-action.primary {
+    background: linear-gradient(135deg, #2D5BFF, #1E40AF);
+    border-color: transparent;
+  }
+  
+  .btn-action.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(45, 91, 255, 0.3);
+  }
+  
+  .btn-action.secondary {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  /* Status Banner */
+  .status-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+  
+  .status-banner.valid {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #10B981;
+  }
+  
+  .status-banner.valid svg {
+    color: #10B981;
+  }
+  
+  .status-banner.error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #EF4444;
+  }
+  
+  .status-banner.error svg {
+    color: #EF4444;
+  }
+  
+  /* Editor Section */
+  .editor-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .editor-pane {
+    display: flex;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  
+  .editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .editor-header h3 {
+    font-size: 1rem;
+    color: #fff;
+    margin: 0;
+  }
+  
+  .editor-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .btn-icon {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.7);
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .btn-icon:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  .json-textarea {
+    flex: 1;
+    min-height: 400px;
+    background: rgba(0, 0, 0, 0.3);
+    border: none;
+    color: #fff;
+    padding: 1.25rem;
+    font-family: 'Courier New', 'Monaco', 'Consolas', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    resize: vertical;
+    transition: all 0.2s;
+  }
+  
+  .json-textarea:focus {
+    outline: none;
+    background: rgba(0, 0, 0, 0.4);
+  }
+  
+  .json-textarea:read-only {
+    cursor: default;
+  }
+  
+  .json-textarea::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+  }
+  
+  /* Custom scrollbar for textarea */
+  .json-textarea::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+  .json-textarea::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  
+  .json-textarea::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+  }
+  
+  .json-textarea::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+  
+  /* Statistics Section */
+  .stats-section {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .stats-section h3 {
+    font-size: 1.25rem;
+    color: #fff;
+    margin: 0 0 1.25rem 0;
+  }
+  
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+  }
+  
+  .stat-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+  
+  .stat-label {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+  }
+  
+  .stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2D5BFF;
+  }
+  
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .editor-section {
+      grid-template-columns: 1fr;
+    }
+  
+    .controls-group {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1rem;
+    }
+  
+    .control-item select {
+      width: 100%;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .controls-section {
+      gap: 1rem;
+    }
+  
+    .actions-group {
+      flex-direction: column;
+    }
+  
+    .btn-action {
+      width: 100%;
+      justify-content: center;
+    }
+  
+    .json-textarea {
+      min-height: 300px;
+      font-size: 0.85rem;
+    }
+  
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  
+    .stat-value {
+      font-size: 1.25rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+  
+    .control-item.checkbox label {
+      font-size: 0.85rem;
+    }
+  }
